@@ -13,21 +13,27 @@
              We position the whole group with translate(), because that
              same transform is what we'll animate in Stage 2. -->
         <g
-            v-for="pos in positions"
-            :key="pos"
+            v-for="player in players"
+            :key="player"
             class="player"
-            :transform="`translate(${positionCoords[pos].x}, ${positionCoords[pos].y})`"
+            :transform="`translate(${coordsFor(player).x}, ${coordsFor(player).y})`"
         >
             <circle r="24" />
-            <text text-anchor="middle" dominant-baseline="central">{{ pos }}</text>
+            <text text-anchor="middle" dominant-baseline="central">{{ player }}</text>
         </g>
     </svg>
 </template>
 
 <script setup lang="ts">
-import { positionCoords, type Position } from '@/data/rotations';
+import { positionCoords, positionOf, type Position, type Point } from '@/data/rotations';
 
-const positions: Position[] = [1, 2, 3, 4, 5, 6];
+const props = defineProps<{ rotation: number }>();
+
+const players: Position[] = [1, 2, 3, 4, 5, 6];
+
+function coordsFor(player: Position): Point {
+    return positionCoords[positionOf(player, props.rotation)];
+}
 </script>
 
 <style scoped>
@@ -57,6 +63,7 @@ const positions: Position[] = [1, 2, 3, 4, 5, 6];
     fill: #2b6cb0;
     stroke: #ffffff;
     stroke-width: 2;
+    transition: transform 0.6s ease;
 }
 
 .player text {

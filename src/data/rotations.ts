@@ -23,3 +23,11 @@ export const positionCoords: Record<Position, Point> = {
     6: { x: 180, y: 250 },
     1: { x: 270, y: 250 },
 }
+
+export const rotationCycle: Position[] = [2, 1, 6, 5, 4, 3];
+
+export function positionOf(player: Position, rotation: number): Position {
+    const start = rotationCycle.indexOf(player);
+    const index = (start + rotation) % rotationCycle.length;
+    return rotationCycle[index];
+}
