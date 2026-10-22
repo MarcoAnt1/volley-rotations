@@ -1,11 +1,20 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import Court from './components/Court.vue';
+</script>
 
 <template>
-  <h1>You did it!</h1>
-  <p>
-    Visit <a href="https://vuejs.org/" target="_blank" rel="noopener">vuejs.org</a> to read the
-    documentation
-  </p>
+  <main>
+    <h1>Volleyball Rotations</h1>
+    <Court />
+  </main>
 </template>
 
-<style scoped></style>
+<style scoped>
+main {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 24px;
+  text-align: center;
+  font-family: system-ui, sans-serif;
+}
+</style>
