@@ -31,3 +31,14 @@ export function positionOf(player: Position, rotation: number): Position {
     const index = (start + rotation) % rotationCycle.length;
     return rotationCycle[index];
 }
+
+export const SETTER: Position = 1;
+
+export const setterTips: Record<Position, string> = {
+    1: 'Setter in position 1 (back-right). Back-row setter -> all three front-row players can attack. Short release to the net.',
+    6: 'Setter in position 6 (back-middle). Still back row -> three front-row attackers. Release forward and right to the target.',
+    5: 'Setter in position 5 (back-left). Back row, but the longest run to the target - release early toward the right-front.',
+    4: 'Setter in position 4 (front-left). Now front row -> only two other front-row attackers. Slide righ along the net.',
+    3: 'Setter in position 3 (front-middle). Front-row setter - move right to the target; back row attacks matter more here.',
+    2: 'Setter in position 2 (front-right). Front row and already near the target - the easiest rotation to set from',
+};

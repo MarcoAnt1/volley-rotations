@@ -1,3 +1,15 @@
+<script setup lang="ts">
+import { positionCoords, positionOf, SETTER, type Position, type Point } from '@/data/rotations';
+
+const props = defineProps<{ rotation: number }>();
+
+const players: Position[] = [1, 2, 3, 4, 5, 6];
+
+function coordsFor(player: Position): Point {
+    return positionCoords[positionOf(player, props.rotation)];
+}
+</script>
+
 <template>
     <svg class="court" viewBox="0 0 360 360" xmlns="http://www.w3.org/2000/svg">
         <!-- Court floor -->
@@ -16,6 +28,7 @@
             v-for="player in players"
             :key="player"
             class="player"
+            :class="{ setter: player === SETTER}"
             :transform="`translate(${coordsFor(player).x}, ${coordsFor(player).y})`"
         >
             <circle r="24" />
@@ -23,18 +36,6 @@
         </g>
     </svg>
 </template>
-
-<script setup lang="ts">
-import { positionCoords, positionOf, type Position, type Point } from '@/data/rotations';
-
-const props = defineProps<{ rotation: number }>();
-
-const players: Position[] = [1, 2, 3, 4, 5, 6];
-
-function coordsFor(player: Position): Point {
-    return positionCoords[positionOf(player, props.rotation)];
-}
-</script>
 
 <style scoped>
 .court {
@@ -69,5 +70,11 @@ function coordsFor(player: Position): Point {
 .player text {
     fill: #ffffff;
     font: 600 18px system-ui, sans-serif;
+}
+
+.player.setter circle {
+    fill: #2b8a3e;
+    stroke: #ffd43b;
+    stroke-width: 3;
 }
 </style>
