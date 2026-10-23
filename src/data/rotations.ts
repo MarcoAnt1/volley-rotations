@@ -29,7 +29,7 @@ export const rotationCycle: Position[] = [2, 1, 6, 5, 4, 3];
 export function positionOf(player: Position, rotation: number): Position {
     const start = rotationCycle.indexOf(player);
     const index = (start + rotation) % rotationCycle.length;
-    return rotationCycle[index];
+    return rotationCycle[index]!;
 }
 
 export const SETTER: Position = 1;

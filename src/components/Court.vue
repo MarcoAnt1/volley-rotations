@@ -1,17 +1,41 @@
 <script setup lang="ts">
+import { reactive, ref, watch } from 'vue';
 import { positionCoords, positionOf, SETTER, type Position, type Point } from '@/data/rotations';
+import PlayerToken from './PlayerToken.vue';
 
 const props = defineProps<{ rotation: number }>();
 
 const players: Position[] = [1, 2, 3, 4, 5, 6];
 
+const svg = ref<SVGSVGElement | null>(null);
+
+const overrides = reactive<Partial<Record<Position, Point>>>({});
+
 function coordsFor(player: Position): Point {
-    return positionCoords[positionOf(player, props.rotation)];
+    return overrides[player] ?? positionCoords[positionOf(player, props.rotation)];
 }
+
+function toSvgPoint(event: PointerEvent): Point {
+    const el = svg.value;
+    const screenToSvg = el?.getScreenCTM()!.inverse();
+    const local = new DOMPoint(event.clientX, event.clientY).matrixTransform(screenToSvg);
+    return { x: local.x, y: local.y };
+}
+
+function onDrag(player: Position, event: PointerEvent) {
+    overrides[player] = toSvgPoint(event);
+}
+
+watch(
+    () => props.rotation,
+    () => {
+        for (const p of players) delete overrides[p];
+    },
+);
 </script>
 
 <template>
-    <svg class="court" viewBox="0 0 360 360" xmlns="http://www.w3.org/2000/svg">
+    <svg ref="svg" class="court" viewBox="0 0 360 360" xmlns="http://www.w3.org/2000/svg">
         <!-- Court floor -->
         <rect class="floor" x="40" y="40" width="280" height="280"/>
 
@@ -24,16 +48,15 @@ function coordsFor(player: Position): Point {
         <!-- One group per player: a circle + its position number.
              We position the whole group with translate(), because that
              same transform is what we'll animate in Stage 2. -->
-        <g
+        <PlayerToken
             v-for="player in players"
             :key="player"
-            class="player"
-            :class="{ setter: player === SETTER}"
-            :transform="`translate(${coordsFor(player).x}, ${coordsFor(player).y})`"
-        >
-            <circle r="24" />
-            <text text-anchor="middle" dominant-baseline="central">{{ player }}</text>
-        </g>
+            :player="player"
+            :x="coordsFor(player).x"
+            :y="coordsFor(player).y"
+            :is-setter="player === SETTER"
+            @drag="onDrag"
+        />
     </svg>
 </template>
 
@@ -58,23 +81,5 @@ function coordsFor(player: Position): Point {
 .attack-line {
     stroke: #ffffff;
     stroke-width: 2;
-}
-
-.player circle {
-    fill: #2b6cb0;
-    stroke: #ffffff;
-    stroke-width: 2;
-    transition: transform 0.6s ease;
-}
-
-.player text {
-    fill: #ffffff;
-    font: 600 18px system-ui, sans-serif;
-}
-
-.player.setter circle {
-    fill: #2b8a3e;
-    stroke: #ffd43b;
-    stroke-width: 3;
 }
 </style>
