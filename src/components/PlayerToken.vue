@@ -7,6 +7,7 @@ const props = defineProps<{
   x: number;
   y: number;
   isSetter: boolean;
+  invalid: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -34,7 +35,7 @@ function onPointerUp(event: PointerEvent) {
 <template>
     <g
         class="token"
-        :class="{ setter: isSetter, dragging }"
+        :class="{ setter: isSetter, dragging, invalid }"
         :transform="`translate(${x}, ${y})`"
         @pointerdown="onPointerDown"
         @pointermove="onPointerMove"
@@ -49,7 +50,7 @@ function onPointerUp(event: PointerEvent) {
 .token {
     cursor: grab;
     touch-action: none;
-    transition: transform 0.6 ease;
+    transition: transform 0.6s ease;
 }
 
 .token.dragging {
@@ -73,5 +74,10 @@ function onPointerUp(event: PointerEvent) {
     fill: #2b8a3e;
     stroke: #ffd43b;
     stroke-width: 3;
+}
+
+.token.invalid circle {
+    stroke: #e03131;
+    stroke-width: 4;
 }
 </style>

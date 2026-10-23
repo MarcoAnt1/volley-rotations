@@ -42,3 +42,38 @@ export const setterTips: Record<Position, string> = {
     3: 'Setter in position 3 (front-middle). Front-row setter - move right to the target; back row attacks matter more here.',
     2: 'Setter in position 2 (front-right). Front row and already near the target - the easiest rotation to set from',
 };
+
+export interface Violation {
+    a: Position;
+    b: Position;
+    rule: string;
+}
+
+export function overlapViolations(at: Record<Position, Point>): Violation[] {
+    const found: Violation[] = [];
+
+    const frontBehind: [Position, Position][] = [
+        [2, 1],
+        [3, 6],
+        [4, 5],
+    ];
+    for (const [front, back] of frontBehind) {
+        if (at[front].y >= at[back].y) {
+            found.push({ a: front, b: back, rule: `${front} must stay in front of ${back}` });
+        }
+    }
+
+    const leftOf: [Position, Position][] = [
+        [4, 3],
+        [3, 2],
+        [5, 6],
+        [6, 1],
+    ];
+    for (const [left, right] of leftOf) {
+        if (at[left].x >= at[right].x) {
+            found.push({ a: left, b: right, rule: `${left} must stay in left of ${right}` });
+        }
+    }
+
+    return found;
+}
