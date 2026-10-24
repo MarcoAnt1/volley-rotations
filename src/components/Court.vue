@@ -3,15 +3,16 @@ import { computed, reactive, ref, watch } from 'vue';
 import {
     positionCoords,
     positionOf,
-    SETTER,
+    activeSetter,
     overlapViolations,
     type Position,
     type Point,
-    type Violation
+    type Violation,
+    type VolleySystem
 } from '@/data/rotations';
 import PlayerToken from './PlayerToken.vue';
 
-const props = defineProps<{ rotation: number }>();
+const props = defineProps<{ rotation: number; system: VolleySystem }>();
 
 const players: Position[] = [1, 2, 3, 4, 5, 6];
 
@@ -34,12 +35,15 @@ function onDrag(player: Position, event: PointerEvent) {
     overrides[player] = toSvgPoint(event);
 }
 
-watch(
-    () => props.rotation,
-    () => {
-        for (const p of players) delete overrides[p];
-    },
-);
+function resetPositions() {
+    for (const p of players) delete overrides[p];
+}
+
+const hasOverrides = computed(() => players.some((p) => overrides[p] !== undefined));
+
+watch(() => props.rotation, resetPositions);
+
+const active = computed<Position>(() => activeSetter(props.system, props.rotation));
 
 const playerByPosition = computed<Record<Position, Position>>(() => {
     const map = {} as Record<Position, Position>;
@@ -72,6 +76,7 @@ const invalidPlayers = computed<Set<Position>>(() => {
 <template>
     <div class="court-wrap">
         <svg ref="svg" class="court" viewBox="0 0 360 360" xmlns="http://www.w3.org/2000/svg">
+            <text class="net-label" x="180" y="30" text-anchor="middle">NET</text>
             <!-- Court floor -->
             <rect class="floor" x="40" y="40" width="280" height="280"/>
             
@@ -81,16 +86,14 @@ const invalidPlayers = computed<Set<Position>>(() => {
             <!-- Attack line: 3m from the net = one third of the 9m depth -->
             <line class="attack-line" x1="40" y1="133" x2="320" y2="133"/>
             
-            <!-- One group per player: a circle + its position number.
-            We position the whole group with translate(), because that
-            same transform is what we'll animate in Stage 2. -->
             <PlayerToken
                 v-for="player in players"
                 :key="player"
                 :player="player"
                 :x="coordsFor(player).x"
                 :y="coordsFor(player).y"
-                :is-setter="player === SETTER"
+                :is-setter="system.setters.includes(player)"
+                :is-active-setter="player === active"
                 :invalid="invalidPlayers.has(player)"
                 @drag="onDrag"
             />
@@ -99,6 +102,10 @@ const invalidPlayers = computed<Set<Position>>(() => {
         <p v-if="violations.length" class="warning">
             ⚠ Overlap: {{ violations.map((v) => v.rule).join('; ') }}
         </p>
+
+        <button class="reset" :disabled="!hasOverrides" @click="resetPositions">
+            Reset positions
+        </button>
     </div>
 </template>
 
@@ -113,6 +120,12 @@ const invalidPlayers = computed<Set<Position>>(() => {
     width: 100%;
     max-width: 460px;
     height: auto;
+}
+
+.net-label {
+    fill: #333333;
+    font: 600 12px system-ui, sans-serif;
+    letter-spacing: 2px;
 }
 
 .floor {
@@ -137,5 +150,17 @@ const invalidPlayers = computed<Set<Position>>(() => {
     color: #e03131;
     font-weight: 600;
     line-height: 1.4;
+}
+
+.reset {
+    margin-top: 12px;
+    font-size: 14px;
+    padding: 6px 14px;
+    cursor: pointer;
+}
+
+.reset:disabled {
+    opacity: 0.5;
+    cursor: default;
 }
 </style>

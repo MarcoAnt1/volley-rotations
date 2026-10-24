@@ -1,25 +1,49 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { ref, computed } from 'vue';
 import Court from './components/Court.vue';
 import { useRotation } from './composables/useRotation.js';
-import { positionOf, setterTips, SETTER } from './data/rotations.js';
+import { systems, setterTip, type SystemName } from './data/rotations.js';
 
 const { rotation, rotateForward, rotateBack } = useRotation();
 
-const setterTip = computed(() => setterTips[positionOf(SETTER, rotation.value)]);
+const systemNames: SystemName[] = [ '5-1', '6-2', '4-2'];
+const systemName = ref<SystemName>('5-1');
+const system = computed(() => systems[systemName.value]);
+
+const tip = computed(() => setterTip(system.value, rotation.value));
 </script>
 
 <template>
   <main>
     <h1>Volleyball Rotations</h1>
-    <Court :rotation="rotation" />
+
+    <div class="systems">
+      <button
+        v-for="name in systemNames"
+        :key="name"
+        :class="{ selected: name === systemName }"
+        @click="systemName = name"
+      >
+        {{ name }}
+      </button>
+    </div>
+
+    <Court :rotation="rotation" :system="system" />
+
     <div class="controls">
       <button @click="rotateBack">‹ Back</button>
       <span>Rotation {{ rotation + 1 }} of 6</span>
       <button @click="rotateForward">Forward ›</button>
     </div>
-    <p class="tip">{{ setterTip }}</p>
-    <p class="legend"><span class="dot"></span> Setter (5-1 system)</p>
+
+    <p class="tip">{{ tip }}</p>
+
+    <p class="legend">
+      <span class="dot"></span> Active setter
+      <template v-if="system.setters.length > 1">
+        <span class="dot dot-setter"></span> Other setter
+      </template>
+    </p>
   </main>
 </template>
 
@@ -30,6 +54,28 @@ main {
   padding: 24px;
   text-align: center;
   font-family: system-ui, sans-serif;
+}
+
+.systems {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.systems button {
+  font-size: 15px;
+  padding: 6px 14px;
+  border: 1px solid #ccc;
+  background: #f8f9fa;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.systems button.selected {
+  background: #2b8a3e;
+  color: #ffffff;
+  border-color: #2b8a3e;
 }
 
 .controls {
@@ -70,5 +116,16 @@ main {
   border-radius: 50%;
   background: #2b8a3e;
   border: 2px solid #ffd43b;
+}
+
+.dot-active {
+  background: #2b8a3e;
+  border: 2px solid #ffd43b;
+}
+
+.dot-setter {
+  background: #0c8599;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 0 1px #ccc;
 }
 </style>

@@ -32,17 +32,6 @@ export function positionOf(player: Position, rotation: number): Position {
     return rotationCycle[index]!;
 }
 
-export const SETTER: Position = 1;
-
-export const setterTips: Record<Position, string> = {
-    1: 'Setter in position 1 (back-right). Back-row setter -> all three front-row players can attack. Short release to the net.',
-    6: 'Setter in position 6 (back-middle). Still back row -> three front-row attackers. Release forward and right to the target.',
-    5: 'Setter in position 5 (back-left). Back row, but the longest run to the target - release early toward the right-front.',
-    4: 'Setter in position 4 (front-left). Now front row -> only two other front-row attackers. Slide righ along the net.',
-    3: 'Setter in position 3 (front-middle). Front-row setter - move right to the target; back row attacks matter more here.',
-    2: 'Setter in position 2 (front-right). Front row and already near the target - the easiest rotation to set from',
-};
-
 export interface Violation {
     a: Position;
     b: Position;
@@ -71,9 +60,68 @@ export function overlapViolations(at: Record<Position, Point>): Violation[] {
     ];
     for (const [left, right] of leftOf) {
         if (at[left].x >= at[right].x) {
-            found.push({ a: left, b: right, rule: `${left} must stay in left of ${right}` });
+            found.push({ a: left, b: right, rule: `${left} must stay left of ${right}` });
         }
     }
 
     return found;
+}
+
+// -- System --
+
+export type SystemName = '5-1' | '6-2' | '4-2';
+
+export interface VolleySystem {
+    name: SystemName;
+    setters: Position[];
+    activeRow: 'front' | 'back' | 'any';
+    blurb: string;
+}
+
+export const systems: Record<SystemName, VolleySystem> = {
+    '5-1': {
+        name: '5-1',
+        setters: [1],
+        activeRow: 'any',
+        blurb: 'One setter who sets in all six rotations.',
+    },
+    '6-2': {
+        name: '6-2',
+        setters: [1, 4],
+        activeRow: 'back',
+        blurb: 'Two setters; the back-row one sets, so all three front-row players can attack.',
+    },
+    '4-2': {
+        name: '4-2',
+        setters: [1, 4],
+        activeRow: 'front',
+        blurb: 'Two setters; the front-row one sets from near the net.',
+    },
+};
+
+export const FROM_ROW: Position[] = [2, 3, 4];
+
+export function isFrontRow(pos: Position): boolean {
+    return FROM_ROW.includes(pos);
+}
+
+export function activeSetter(system: VolleySystem, rotation: number): Position {
+    if (system.setters.length == 1) return system.setters[0]!;
+
+    for (const setter of system.setters) {
+        const front = isFrontRow(positionOf(setter, rotation));
+        if (system.activeRow === 'front' && front) return setter;
+        if (system.activeRow === 'back' && !front) return setter;
+    }
+    return system.setters[0]!;
+}
+
+export function setterTip(system: VolleySystem, rotation: number): string {
+    const setter = activeSetter(system, rotation);
+    const pos = positionOf(setter, rotation);
+    const front = isFrontRow(pos);
+    const where = front
+        ? 'sets from near the net'
+        : 'penetrates from the back row to the net to set';
+    return `${system.blurb} This rotation the setter is player ${setter}, in the position ${pos}(${front ? 'front' : 'back'}) - ${where}.`;
 }

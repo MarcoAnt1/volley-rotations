@@ -7,6 +7,7 @@ const props = defineProps<{
   x: number;
   y: number;
   isSetter: boolean;
+  isActiveSetter: boolean;
   invalid: boolean;
 }>();
 
@@ -35,7 +36,7 @@ function onPointerUp(event: PointerEvent) {
 <template>
     <g
         class="token"
-        :class="{ setter: isSetter, dragging, invalid }"
+        :class="{ setter: isSetter, 'active-setter': isActiveSetter, dragging, invalid }"
         :transform="`translate(${x}, ${y})`"
         @pointerdown="onPointerDown"
         @pointermove="onPointerMove"
@@ -71,9 +72,15 @@ function onPointerUp(event: PointerEvent) {
 }
 
 .token.setter circle {
-    fill: #2b8a3e;
+    fill: #0c8599;
     stroke: #ffd43b;
     stroke-width: 3;
+}
+
+.token.active-setter circle {
+    fill: #2b8a3e;
+    stroke: #ffd43b;
+    stroke-width: 2;
 }
 
 .token.invalid circle {
