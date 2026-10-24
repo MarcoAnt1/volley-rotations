@@ -52,7 +52,7 @@ function onPointerUp(event: PointerEvent) {
 .token {
     cursor: grab;
     touch-action: none;
-    transition: transform 0.6s ease;
+    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .token.dragging {
@@ -61,31 +61,40 @@ function onPointerUp(event: PointerEvent) {
 }
 
 .token circle {
-    fill: #2b6cb0;
-    stroke: #ffffff;
-    stroke-width: 2;
+    fill: var(--player);
+    stroke: transparent;
+    stroke-width: 3;
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.25));
+    transition: fill 0.2s, stroke 0.2s, filter 0.2s;
+}
+
+.token.dragging circle {
+    filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.35));
 }
 
 .token text {
-    fill: #ffffff;
-    font: 700 13px system-ui, sans-serif;
+    fill: var(--player-ink);
+    font: 700 12px Inter, system-ui, sans-serif;
+    letter-spacing: 0.02em;
     user-select: none;
+    pointer-events: none;
 }
 
+/* Order matters: equal specificity, so the last match wins */
 .token.setter circle {
-    fill: #0c8599;
-    stroke: #ffd43b;
-    stroke-width: 2;
+    stroke: var(--accent);
 }
 
 .token.active-setter circle {
-    fill: #2b8a3e;
-    stroke: #ffd43b;
-    stroke-width: 3;
+    fill: var(--accent);
+    stroke: transparent;
+}
+
+.token.active-setter text {
+    fill: var(--accent-ink);
 }
 
 .token.invalid circle {
-    stroke: #e03131;
-    stroke-width: 4;
+    stroke: var(--danger);
 }
 </style>

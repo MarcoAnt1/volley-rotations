@@ -27,7 +27,7 @@ function coordsFor(player: Position): Point {
 
 function toSvgPoint(event: PointerEvent): Point {
     const el = svg.value!;
-    const screenToSvg = el?.getScreenCTM()!.inverse();
+    const screenToSvg = el.getScreenCTM()!.inverse();
     const local = new DOMPoint(event.clientX, event.clientY).matrixTransform(screenToSvg);
     return { x: local.x, y: local.y };
 }
@@ -78,12 +78,13 @@ const invalidPlayers = computed<Set<Position>>(() => {
 <template>
     <div class="court-wrap">
         <svg ref="svg" class="court" viewBox="0 0 360 360" xmlns="http://www.w3.org/2000/svg">
-            <text class="net-label" x="180" y="30" text-anchor="middle">NET</text>
-            <!-- Court floor -->
+            <!-- Free zone: the area around the court -->
+            <rect class="free-zone" x="0" y="0" width="360" height="360" rx="16"/>
+            <text class="net-label" x="180" y="22" text-anchor="middle">NET</text>
+
+            <!-- Court floor, with the front zone slightly lighter -->
             <rect class="floor" x="40" y="40" width="280" height="280"/>
-            
-            <!-- Net runs along the top edge of the court -->
-            <line class="net" x1="40" y1="40" x2="320" y2="40"/>
+            <rect class="front-zone" x="40" y="40" width="280" height="93" />
             
             <!-- Attack line: 3m from the net = one third of the 9m depth -->
             <line class="attack-line" x1="40" y1="133" x2="320" y2="133"/>
@@ -103,6 +104,11 @@ const invalidPlayers = computed<Set<Position>>(() => {
                 {{  zone }}
             </text>
             
+            <!-- Net reaches a bit past the sidelines, with posts at both ends -->
+            <line class="net" x1="28" y1="40" x2="332" y2="40" />
+            <circle class="net-post" cx="28" cy="40" r="4" />
+            <circle class="net-post" cx="332" cy="40" r="4" />
+
             <PlayerToken
                 v-for="player in players"
                 :key="player"
@@ -117,13 +123,15 @@ const invalidPlayers = computed<Set<Position>>(() => {
             />
         </svg>
 
-        <p v-if="violations.length" class="warning">
-            ⚠ Overlap: {{ violations.map((v) => v.rule).join('; ') }}
-        </p>
-
-        <button class="reset" :disabled="!hasOverrides" @click="resetPositions">
-            Reset positions
-        </button>
+        <div class="footer-row">
+            <p v-if="violations.length" class="warning">
+                ⚠ Overlap: {{ violations.map((v) => v.rule).join('; ') }}
+            </p>
+            
+            <button class="reset" :disabled="!hasOverrides" @click="resetPositions">
+                Reset positions
+            </button>
+        </div>
     </div>
 </template>
 
@@ -132,67 +140,104 @@ const invalidPlayers = computed<Set<Position>>(() => {
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 12px;
 }
 
 .court {
+    display: block;
     width: 100%;
     max-width: 460px;
     height: auto;
+    user-select: none;
 }
 
-.net-label {
-    fill: #333333;
-    font: 600 12px system-ui, sans-serif;
-    letter-spacing: 2px;
+.free-zone {
+    fill: var(--free-zone);
 }
 
 .floor {
-    fill: #e8a23d;
-    stroke: #ffffff;
-    stroke-width: 3;
+    fill: var(--court);
+    stroke: var(--court-line);
+    stroke-width: 2;
+}
+
+.front-zone {
+    fill: #ffffff;
+    opacity: 0.05;
 }
 
 .net {
-    stroke: #333333;
-    stroke-width: 4;
+    stroke: var(--net);
+    stroke-width: 3;
+    stroke-linecap: round;
+}
+
+.net-post {
+    fill: var(--net);
+}
+
+.net-label {
+    fill: var(--muted);
+    font: 600 10px Inter, system-ui, sans-serif;
+    letter-spacing: 0.2em;
 }
 
 .attack-line {
-    stroke: #ffffff;
+    stroke: var(--court-line);
     stroke-width: 2;
 }
 
 .zone-line {
     stroke: #ffffff;
     stroke-width: 1;
-    stroke-dasharray: 4 4;
-    opacity: 0.5;
+    stroke-dasharray: 3 5;
+    opacity: 0.25;
 }
 
 .zone-number {
     fill: #ffffff;
-    font: 700 16px system-ui, sans-serif;
-    opacity: 0.6;
+    font: 600 14px Inter, system-ui, sans-serif;
+    opacity: 0.35;
     pointer-events: none;
 }
 
+.footer-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    max-width: 460px;
+    min-height: 32px;
+}
+
 .warning {
-    max-width: 420px;
-    margin: 12px auto 0;
-    color: #e03131;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 13px;
     font-weight: 600;
-    line-height: 1.4;
+    text-align: left;
+    color: var(--danger);
+    background: color-mix(in srgb, var(--danger) 12%, transparent);
 }
 
 .reset {
-    margin-top: 12px;
-    font-size: 14px;
+    margin-left: auto;
     padding: 6px 14px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--ink);
+    font-size: 13px;
+    font-weight: 600;
     cursor: pointer;
 }
 
+.reset:hover:not(:disabled) {
+    background: var(--surface-2);
+}
+
 .reset:disabled {
-    opacity: 0.5;
+    opacity: 0.4;
     cursor: default;
 }
 </style>
