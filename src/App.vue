@@ -3,12 +3,15 @@ import { ref, computed } from 'vue';
 import Court from './components/Court.vue';
 import { useRotation } from './composables/useRotation.js';
 import { systems, setterTip, type SystemName } from './data/rotations.js';
+import { phaseLabels, phaseTips, type Phase } from './data/formations.ts';
 
 const { rotation, rotateForward, rotateBack, goTo } = useRotation();
 
 const systemNames: SystemName[] = [ '5-1', '6-2', '4-2'];
 const systemName = ref<SystemName>('5-1');
 const system = computed(() => systems[systemName.value]);
+const phases: Phase[] = ['base', 'serve', 'receive', 'defense'];
+const phase = ref<Phase>('base');
 
 const tip = computed(() => setterTip(system.value, rotation.value));
 </script>
@@ -33,8 +36,21 @@ const tip = computed(() => setterTip(system.value, rotation.value));
       </button>
     </div>
 
+    <div class="segmented" role="tablist" aria-label="Situation">
+      <button
+        v-for="p in phases"
+        :key="p"
+        role="tab"
+        :aria-selected="p === phase"
+        :class="{ selected: p === phase }"
+        @click="phase = p"
+      >
+        {{ phaseLabels[p] }}
+      </button>
+    </div>
+
     <section class="card">
-      <Court :rotation="rotation" :system="system" />
+      <Court :rotation="rotation" :system="system" :phase="phase" />
     </section>
 
     <nav class="stepper" aria-label="Rotation">
@@ -54,7 +70,9 @@ const tip = computed(() => setterTip(system.value, rotation.value));
     <p class="step-label">Rotation {{  rotation + 1 }} of 6</p>
 
     <section class="callout">
-      <p>{{ tip }}</p>
+      <p class="callout-title">{{ phaseLabels[phase] }}</p>
+      <p>{{ phaseTips[phase] }}</p>
+      <p class="callout-setter">{{ tip }}</p>
     </section>
 
     <ul class="legend">
@@ -195,6 +213,23 @@ h1 {
   border: 1px solid var(--border);
   border-left: 3px solid var(--accent);
   border-radius: 12px;
+}
+
+.callout p + p {
+  margin-top: 8px;
+}
+
+.callout-title {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.callout-setter {
+  font-size: 14px;
+  color: var(--muted);
 }
 
 .legend {

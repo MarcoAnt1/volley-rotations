@@ -10,9 +10,10 @@ import {
     type Violation,
     type VolleySystem
 } from '@/data/rotations';
+import { formation, SERVER_ZONE, type Phase } from '@/data/formations.ts';
 import PlayerToken from './PlayerToken.vue';
 
-const props = defineProps<{ rotation: number; system: VolleySystem }>();
+const props = defineProps<{ rotation: number; system: VolleySystem; phase: Phase }>();
 
 const players: Position[] = [1, 2, 3, 4, 5, 6];
 const zones: Position[] = [1, 2, 3, 4, 5, 6];
@@ -21,8 +22,10 @@ const svg = ref<SVGSVGElement | null>(null);
 
 const overrides = reactive<Partial<Record<Position, Point>>>({});
 
+const currentFormation = computed(() => formation(props.phase, props.system, props.rotation));
+
 function coordsFor(player: Position): Point {
-    return overrides[player] ?? positionCoords[positionOf(player, props.rotation)];
+    return overrides[player] ?? currentFormation.value[positionOf(player, props.rotation)];
 }
 
 function toSvgPoint(event: PointerEvent): Point {
@@ -42,7 +45,7 @@ function resetPositions() {
 
 const hasOverrides = computed(() => players.some((p) => overrides[p] !== undefined));
 
-watch(() => props.rotation, resetPositions);
+watch([() => props.rotation, () => props.phase, () => props.system], resetPositions);
 
 const active = computed<Position>(() => activeSetter(props.system, props.rotation));
 
@@ -62,7 +65,11 @@ const coordByPosition = computed<Record<Position, Point>>(() => {
     return map;
 });
 
-const violations = computed<Violation[]>(() => overlapViolations(coordByPosition.value));
+const violations = computed<Violation[]>(() => {
+    if (props.phase === 'defense') return [];
+    const exempt = props.phase === 'serve' ? SERVER_ZONE : undefined;
+    return overlapViolations(coordByPosition.value, exempt);
+});
 
 const invalidPlayers = computed<Set<Position>>(() => {
     const flagged = new Set<Position>;
@@ -77,9 +84,9 @@ const invalidPlayers = computed<Set<Position>>(() => {
 
 <template>
     <div class="court-wrap">
-        <svg ref="svg" class="court" viewBox="0 0 360 360" xmlns="http://www.w3.org/2000/svg">
+        <svg ref="svg" class="court" viewBox="0 0 360 390" xmlns="http://www.w3.org/2000/svg">
             <!-- Free zone: the area around the court -->
-            <rect class="free-zone" x="0" y="0" width="360" height="360" rx="16"/>
+            <rect class="free-zone" x="0" y="0" width="360" height="390" rx="16"/>
             <text class="net-label" x="180" y="22" text-anchor="middle">NET</text>
 
             <!-- Court floor, with the front zone slightly lighter -->
