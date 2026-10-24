@@ -71,10 +71,13 @@ export function overlapViolations(at: Record<Position, Point>): Violation[] {
 
 export type SystemName = '5-1' | '6-2' | '4-2';
 
+export type Role = 'S' | 'S1' | 'S2' | 'OH1' | '0H2' | 'MB1' | 'MB2' | 'OPP';
+
 export interface VolleySystem {
     name: SystemName;
     setters: Position[];
     activeRow: 'front' | 'back' | 'any';
+    roles: Record<Position, Role>;
     blurb: string;
 }
 
@@ -84,25 +87,28 @@ export const systems: Record<SystemName, VolleySystem> = {
         setters: [1],
         activeRow: 'any',
         blurb: 'One setter who sets in all six rotations.',
+        roles: { 1: 'S', 2: 'OH1', 3: 'MB1', 4: 'OPP', 5: '0H2', 6: 'MB2'}
     },
     '6-2': {
         name: '6-2',
         setters: [1, 4],
         activeRow: 'back',
         blurb: 'Two setters; the back-row one sets, so all three front-row players can attack.',
+        roles: { 1: 'S1', 2: 'OH1', 3: 'MB1', 4: 'S2', 5: '0H2', 6: 'MB2'}
     },
     '4-2': {
         name: '4-2',
         setters: [1, 4],
         activeRow: 'front',
         blurb: 'Two setters; the front-row one sets from near the net.',
+        roles: { 1: 'S1', 2: 'OH1', 3: 'MB1', 4: 'S2', 5: '0H2', 6: 'MB2'}
     },
 };
 
-export const FROM_ROW: Position[] = [2, 3, 4];
+export const FRONT_ROW: Position[] = [2, 3, 4];
 
 export function isFrontRow(pos: Position): boolean {
-    return FROM_ROW.includes(pos);
+    return FRONT_ROW.includes(pos);
 }
 
 export function activeSetter(system: VolleySystem, rotation: number): Position {
@@ -123,5 +129,5 @@ export function setterTip(system: VolleySystem, rotation: number): string {
     const where = front
         ? 'sets from near the net'
         : 'penetrates from the back row to the net to set';
-    return `${system.blurb} This rotation the setter is player ${setter}, in the position ${pos}(${front ? 'front' : 'back'}) - ${where}.`;
+    return `${system.blurb} This rotation the setter (${system.roles[setter]}) is in zone ${pos}(${front ? 'front' : 'back'}) - ${where}.`;
 }

@@ -15,6 +15,7 @@ import PlayerToken from './PlayerToken.vue';
 const props = defineProps<{ rotation: number; system: VolleySystem }>();
 
 const players: Position[] = [1, 2, 3, 4, 5, 6];
+const zones: Position[] = [1, 2, 3, 4, 5, 6];
 
 const svg = ref<SVGSVGElement | null>(null);
 
@@ -71,6 +72,7 @@ const invalidPlayers = computed<Set<Position>>(() => {
     }
     return flagged;
 });
+
 </script>
 
 <template>
@@ -85,11 +87,27 @@ const invalidPlayers = computed<Set<Position>>(() => {
             
             <!-- Attack line: 3m from the net = one third of the 9m depth -->
             <line class="attack-line" x1="40" y1="133" x2="320" y2="133"/>
+
+            <line class="zone-line" x1="133.3" y1="40" x2="133.3" y2="320"/>
+            <line class="zone-line" x1="226.7" y1="40" x2="226.7" y2="320"/>
+
+            <text
+                v-for="zone in zones"
+                :key="`zone-${zone}`"
+                class="zone-number"
+                :x="positionCoords[zone].x - 34"
+                :y="positionCoords[zone].y - 34"
+                text-anchor="middle"
+                dominant-baseline="central"
+            >
+                {{  zone }}
+            </text>
             
             <PlayerToken
                 v-for="player in players"
                 :key="player"
                 :player="player"
+                :label="system.roles[player]"
                 :x="coordsFor(player).x"
                 :y="coordsFor(player).y"
                 :is-setter="system.setters.includes(player)"
@@ -142,6 +160,20 @@ const invalidPlayers = computed<Set<Position>>(() => {
 .attack-line {
     stroke: #ffffff;
     stroke-width: 2;
+}
+
+.zone-line {
+    stroke: #ffffff;
+    stroke-width: 1;
+    stroke-dasharray: 4 4;
+    opacity: 0.5;
+}
+
+.zone-number {
+    fill: #ffffff;
+    font: 700 16px system-ui, sans-serif;
+    opacity: 0.6;
+    pointer-events: none;
 }
 
 .warning {

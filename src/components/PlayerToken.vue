@@ -4,6 +4,7 @@ import type { Position } from '@/data/rotations';
 
 const props = defineProps<{
   player: Position;
+  label: string;
   x: number;
   y: number;
   isSetter: boolean;
@@ -43,7 +44,7 @@ function onPointerUp(event: PointerEvent) {
         @pointerup="onPointerUp"
     >
         <circle r="24" />
-        <text text-anchor="middle" dominant-baseline="central">{{ player }}</text>
+        <text text-anchor="middle" dominant-baseline="central">{{ label }}</text>
     </g>
 </template>
 
@@ -67,20 +68,20 @@ function onPointerUp(event: PointerEvent) {
 
 .token text {
     fill: #ffffff;
-    font: 600 18px system-ui, sans-serif;
+    font: 700 13px system-ui, sans-serif;
     user-select: none;
 }
 
 .token.setter circle {
     fill: #0c8599;
     stroke: #ffd43b;
-    stroke-width: 3;
+    stroke-width: 2;
 }
 
 .token.active-setter circle {
     fill: #2b8a3e;
     stroke: #ffd43b;
-    stroke-width: 2;
+    stroke-width: 3;
 }
 
 .token.invalid circle {

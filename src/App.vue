@@ -39,11 +39,13 @@ const tip = computed(() => setterTip(system.value, rotation.value));
     <p class="tip">{{ tip }}</p>
 
     <p class="legend">
-      <span class="dot"></span> Active setter
+      <span class="dot dot-setter"></span> Active setter
       <template v-if="system.setters.length > 1">
         <span class="dot dot-setter"></span> Other setter
       </template>
     </p>
+
+    <p class="roles">S - Setter · OH - Outside hitter · MB - Middle blocker · OPP - Opposite</p>
   </main>
 </template>
 
@@ -114,8 +116,6 @@ main {
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: #2b8a3e;
-  border: 2px solid #ffd43b;
 }
 
 .dot-active {
@@ -127,5 +127,11 @@ main {
   background: #0c8599;
   border: 2px solid #ffffff;
   box-shadow: 0 0 0 1px #ccc;
+}
+
+.roles {
+  margin-top: 4px;
+  font-size: 13;
+  color: #777;
 }
 </style>
