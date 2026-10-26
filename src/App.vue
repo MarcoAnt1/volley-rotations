@@ -8,12 +8,12 @@ import { liberoTip } from './data/libero.ts';
 
 const { rotation, rotateForward, rotateBack, goTo } = useRotation();
 
-const systemNames: SystemName[] = [ '5-1', '6-2', '4-2'];
-const systemName = ref<SystemName>('5-1');
+const systemNames: SystemName[] = [ '4-2', '5-1', '6-2'];
+const systemName = ref<SystemName>('4-2');
 const system = computed(() => systems[systemName.value]);
 const phases: Phase[] = ['base', 'serve', 'receive', 'defense'];
 const phase = ref<Phase>('base');
-const useLibero = ref(true);
+const useLibero = ref(false);
 const libero = computed(() => liberoTip(system.value, rotation.value, phase.value));
 
 const tip = computed(() => setterTip(system.value, rotation.value));
