@@ -19,13 +19,3 @@ export function liberoReplaces(
   if (phase === 'serve' && positionOf(middle, rotation) === SERVER_ZONE) return null
   return middle
 }
-
-export function liberoTip(system: VolleySystem, rotation: number, phase: Phase): string {
-  const middle = backRowMiddle(system, rotation)
-  const name = system.roles[middle]
-  if (liberoReplaces(system, rotation, phase) === null) {
-    return `${name} is serving from zone 1. The libero can't serve, so they wait on the bench and come back in for ${name} once the rally is over.`
-  }
-
-  return `The libero (L) is in for ${name}, the back-row middle. When ${name} rotates to the front row, they swap back.`
-}

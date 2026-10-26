@@ -5,12 +5,6 @@ import { activeSetter, type Role, type VolleySystem } from './systems'
 
 export type Phase = 'base' | 'serve' | 'receive'
 
-export const phaseLabels: Record<Phase, string> = {
-  base: 'Default',
-  serve: 'Serving',
-  receive: 'Reception',
-}
-
 export const phaseTips: Record<Phase, string> = {
   base: 'The rotational order: who stands in which zone. Every other situation starts from here.',
   serve:
