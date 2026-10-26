@@ -5,27 +5,61 @@ import {
     positionOf,
     activeSetter,
     overlapViolations,
+    PLAYERS,
     type Position,
+    type PlayerId,
     type Point,
     type Violation,
-    type VolleySystem
+    type VolleySystem,
 } from '@/data/rotations';
-import { formation, SERVER_ZONE, type Phase } from '@/data/formations.ts';
+import { formation, SERVER_ZONE, type Phase } from '@/data/formations';
+import { liberoReplaces, BENCH_SPOT } from '@/data/libero';
 import PlayerToken from './PlayerToken.vue';
 
-const props = defineProps<{ rotation: number; system: VolleySystem; phase: Phase }>();
+const props = defineProps<{
+    rotation: number;
+    system: VolleySystem;
+    phase: Phase;
+    useLibero: boolean;
+}>();
 
-const players: Position[] = [1, 2, 3, 4, 5, 6];
-const zones: Position[] = [1, 2, 3, 4, 5, 6];
+const zones: Position[] = PLAYERS;
+const everyone: PlayerId[] = [...PLAYERS, 'L'];
+
+// Who we draw: the six in the lineup, plus the libero when enabled.
+const people = computed<PlayerId[]>(() => (props.useLibero ? everyone : PLAYERS));
 
 const svg = ref<SVGSVGElement | null>(null);
 
-const overrides = reactive<Partial<Record<Position, Point>>>({});
+const overrides = reactive<Partial<Record<PlayerId, Point>>>({});
 
 const currentFormation = computed(() => formation(props.phase, props.system, props.rotation));
 
-function coordsFor(player: Position): Point {
-    return overrides[player] ?? currentFormation.value[positionOf(player, props.rotation)];
+// The lineup player the libero is standing in for (null = libero on the bench).
+const replaced = computed<Position | null>(() =>
+    props.useLibero ? liberoReplaces(props.system, props.rotation, props.phase) : null,
+);
+
+// Where someone stands before any dragging.
+function spotFor(id: PlayerId): Point {
+    if (id === 'L') {
+        const r = replaced.value;
+        return r === null ? BENCH_SPOT : currentFormation.value[positionOf(r, props.rotation)];
+    }
+    if (id === replaced.value) return BENCH_SPOT;
+    return currentFormation.value[positionOf(id, props.rotation)];
+}
+
+function coordsFor(id: PlayerId): Point {
+    return overrides[id] ?? spotFor(id);
+}
+
+function isBenched(id: PlayerId): boolean {
+    return id === 'L' ? replaced.value === null : id === replaced.value;
+}
+
+function labelFor(id: PlayerId): string {
+    return id === 'L' ? 'L' : props.system.roles[id];
 }
 
 function toSvgPoint(event: PointerEvent): Point {
@@ -35,33 +69,35 @@ function toSvgPoint(event: PointerEvent): Point {
     return { x: local.x, y: local.y };
 }
 
-function onDrag(player: Position, event: PointerEvent) {
-    overrides[player] = toSvgPoint(event);
+function onDrag(id: PlayerId, event: PointerEvent) {
+    overrides[id] = toSvgPoint(event);
 }
 
 function resetPositions() {
-    for (const p of players) delete overrides[p];
+    for (const id of everyone) delete overrides[id];
 }
 
-const hasOverrides = computed(() => players.some((p) => overrides[p] !== undefined));
+const hasOverrides = computed(() => everyone.some((id) => overrides[id] !== undefined));
 
-watch([() => props.rotation, () => props.phase, () => props.system], resetPositions);
+watch(
+    [() => props.rotation, () => props.phase, () => props.system, () => props.useLibero],
+    resetPositions,
+);
 
 const active = computed<Position>(() => activeSetter(props.system, props.rotation));
 
-const playerByPosition = computed<Record<Position, Position>>(() => {
-    const map = {} as Record<Position, Position>;
-    for (const player of players) {
-        map[positionOf(player, props.rotation)] = player;
+// Who stands in each zone: a lineup player, or the libero in their place.
+const personByZone = computed<Record<Position, PlayerId>>(() => {
+    const map = {} as Record<Position, PlayerId>;
+    for (const player of PLAYERS) {
+        map[positionOf(player, props.rotation)] = player === replaced.value ? 'L' : player;
     }
     return map;
 });
 
 const coordByPosition = computed<Record<Position, Point>>(() => {
     const map = {} as Record<Position, Point>;
-    for (const player of players) {
-        map[positionOf(player, props.rotation)] = coordsFor(player);
-    }
+    for (const zone of zones) map[zone] = coordsFor(personByZone.value[zone]);
     return map;
 });
 
@@ -71,22 +107,28 @@ const violations = computed<Violation[]>(() => {
     return overlapViolations(coordByPosition.value, exempt);
 });
 
-const invalidPlayers = computed<Set<Position>>(() => {
-    const flagged = new Set<Position>;
+const invalidPlayers = computed<Set<PlayerId>>(() => {
+    const flagged = new Set<PlayerId>();
     for (const violation of violations.value) {
-        flagged.add(playerByPosition.value[violation.a]);
-        flagged.add(playerByPosition.value[violation.b]);
+        flagged.add(personByZone.value[violation.a]);
+        flagged.add(personByZone.value[violation.b]);
     }
     return flagged;
 });
-
 </script>
 
 <template>
     <div class="court-wrap">
-        <svg ref="svg" class="court" viewBox="0 0 360 390" xmlns="http://www.w3.org/2000/svg">
+        <svg ref="svg" class="court" viewBox="-70 0 430 390" xmlns="http://www.w3.org/2000/svg">
             <!-- Free zone: the area around the court -->
-            <rect class="free-zone" x="0" y="0" width="360" height="390" rx="16"/>
+            <rect class="free-zone" x="-70" y="0" width="430" height="390" rx="16"/>
+
+            <!-- Bench: where whoever is off court waits -->
+            <g v-if="useLibero">
+                <rect class="bench" x="-62" y="150" width="56" height="200" rx="12"/>
+                <text class="bench-label" x="-34" y="168" text-anchor="middle">BENCH</text>
+            </g>
+
             <text class="net-label" x="180" y="22" text-anchor="middle">NET</text>
 
             <!-- Court floor, with the front zone slightly lighter -->
@@ -117,15 +159,17 @@ const invalidPlayers = computed<Set<Position>>(() => {
             <circle class="net-post" cx="332" cy="40" r="4" />
 
             <PlayerToken
-                v-for="player in players"
-                :key="player"
-                :player="player"
-                :label="system.roles[player]"
-                :x="coordsFor(player).x"
-                :y="coordsFor(player).y"
-                :is-setter="system.setters.includes(player)"
-                :is-active-setter="player === active"
-                :invalid="invalidPlayers.has(player)"
+                v-for="id in people"
+                :key="id"
+                :player="id"
+                :label="labelFor(id)"
+                :x="coordsFor(id).x"
+                :y="coordsFor(id).y"
+                :is-setter="id !== 'L' && system.setters.includes(id)"
+                :is-active-setter="id === active"
+                :is-libero="id === 'L'"
+                :benched="isBenched(id)"
+                :invalid="invalidPlayers.has(id)"
                 @drag="onDrag"
             />
         </svg>
@@ -246,5 +290,18 @@ const invalidPlayers = computed<Set<Position>>(() => {
 .reset:disabled {
     opacity: 0.4;
     cursor: default;
+}
+
+.bench {
+    fill: none;
+    stroke: var(--border-strong);
+    stroke-width: 1.5;
+    stroke-dasharray: 4 4;
+}
+
+.bench-label {
+    fill: var(--muted);
+    font: 600 9px Inter, system-ui, sans-serif;
+    letter-spacing: 0.15em;
 }
 </style>
