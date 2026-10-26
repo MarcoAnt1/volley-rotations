@@ -1,24 +1,22 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
-import Court from '@/components/Court.vue';
-import { useRotation } from '@/composables/useRotation';
-import { liberoTip } from '@/domain/libero.ts';
-import { phaseLabels, phaseTips } from '@/domain/formations';;
-import { setterTip } from './content/rotations';
-import type { Phase } from '@/domain/formations';
-import { SYSTEM_NAMES, systems, type SystemName } from '@/domain/systems';
+import { computed, ref } from 'vue'
+import Court from '@/components/Court.vue'
+import { useRotation } from '@/composables/useRotation'
+import { liberoTip, phaseLabels, phaseTips, setterTip } from '@/content/rotations'
+import type { Phase } from '@/domain/formations'
+import { SYSTEM_NAMES, systems, type SystemName } from '@/domain/systems'
 
-const { rotation, rotateForward, rotateBack, goTo } = useRotation();
+const { rotation, rotateForward, rotateBack, goTo } = useRotation()
 
-const systemNames = SYSTEM_NAMES;
-const systemName = ref<SystemName>('4-2');
-const system = computed(() => systems[systemName.value]);
-const phases: Phase[] = ['base', 'serve', 'receive'];
-const phase = ref<Phase>('base');
-const useLibero = ref(false);
-const libero = computed(() => liberoTip(system.value, rotation.value, phase.value));
+const systemNames = SYSTEM_NAMES
+const systemName = ref<SystemName>('4-2')
+const system = computed(() => systems[systemName.value])
+const phases: Phase[] = ['base', 'serve', 'receive']
+const phase = ref<Phase>('base')
+const useLibero = ref(false)
+const libero = computed(() => liberoTip(system.value, rotation.value, phase.value))
 
-const tip = computed(() => setterTip(system.value, rotation.value));
+const tip = computed(() => setterTip(system.value, rotation.value))
 </script>
 
 <template>

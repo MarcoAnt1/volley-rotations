@@ -21,7 +21,7 @@ export const phaseLabels: Record<Phase, string> = {
 }
 
 export const phaseTips: Record<Phase, string> = {
-    base: 'The rotational order: who stands in which zone. Every other situation starts from here.',
+  base: 'The rotational order: who stands in which zone. Every other situation starts from here.',
   serve:
     'We serve. The player in zone 1 serves from behind the end line; the front row waits at the net to block. The overlap rule applies to everyone except the server.',
   receive:
@@ -44,3 +44,8 @@ export function liberoTip(system: VolleySystem, rotation: number, phase: Phase):
   return `The libero (L) is in for ${name}, the back-row middle. When ${name} rotates to the front row, they swap back.`
 }
 
+export function violationText(v: Violation): string {
+  return v.kind === 'front-behind'
+    ? `${v.a} must stay in front of ${v.b}`
+    : `${v.a} must stay left of ${v.b}`
+}

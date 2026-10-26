@@ -47,7 +47,10 @@ export function overlapViolations(at: Record<Position, Point>, exempt?: Position
 // Nudge a formation until it obeys the overlap rule: any pair that is out
 // of order (or too close) is pushed apart around its midpoint. Fixing one
 // pair can disturb another, so we repeat the pass until things settle.
-export function legalize(target: Record<Position, Point>, exempt?: Position): Record<Position, Point> {
+export function legalize(
+  target: Record<Position, Point>,
+  exempt?: Position,
+): Record<Position, Point> {
   // Work on copies: the target points may be shared constants.
   const at = {} as Record<Position, Point>
   for (const zone of PLAYERS) at[zone] = { ...target[zone] }
@@ -76,10 +79,3 @@ export function legalize(target: Record<Position, Point>, exempt?: Position): Re
   }
   return at
 }
-
-export function violationText(v: Violation): string {
-  return v.kind === 'front-behind'
-    ? `${v.a} must stay in front of ${v.b}`
-    : `${v.a} must stay left of ${v.b}`
-}
-

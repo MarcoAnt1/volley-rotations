@@ -6,7 +6,7 @@ import { BENCH_SPOT, liberoReplaces } from '@/domain/libero'
 import { overlapViolations, type Violation } from '@/domain/overlap'
 import { SERVER_ZONE, positionOf } from '@/domain/rotation'
 import { activeSetter, type VolleySystem } from '@/domain/systems'
-import { violationText } from '@/domain/overlap'
+import { violationText } from '@/content/rotations'
 import PlayerToken from './PlayerToken.vue'
 
 const props = defineProps<{
@@ -104,12 +104,12 @@ const violations = computed<Violation[]>(() => {
 })
 
 const invalidPlayers = computed<Set<PlayerId>>(() => {
-  const flagged = new Set<PlayerId>();
+  const flagged = new Set<PlayerId>()
   for (const violation of violations.value) {
-    flagged.add(personByZone.value[violation.a]);
-    flagged.add(personByZone.value[violation.b]);
+    flagged.add(personByZone.value[violation.a])
+    flagged.add(personByZone.value[violation.b])
   }
-  return flagged;
+  return flagged
 })
 </script>
 
