@@ -1,22 +1,22 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import Court from './components/Court.vue';
-import { useRotation } from './composables/useRotation.js';
-import { systems, setterTip, type SystemName } from './data/rotations.ts';
-import { phaseLabels, phaseTips, type Phase } from './data/formations.ts';
-import { liberoTip } from './data/libero.ts';
+import { ref, computed } from 'vue'
+import Court from './components/Court.vue'
+import { useRotation } from './composables/useRotation.js'
+import { systems, setterTip, type SystemName } from './data/rotations.ts'
+import { phaseLabels, phaseTips, type Phase } from './data/formations.ts'
+import { liberoTip } from './data/libero.ts'
 
-const { rotation, rotateForward, rotateBack, goTo } = useRotation();
+const { rotation, rotateForward, rotateBack, goTo } = useRotation()
 
-const systemNames: SystemName[] = [ '4-2', '5-1', '6-2'];
-const systemName = ref<SystemName>('4-2');
-const system = computed(() => systems[systemName.value]);
-const phases: Phase[] = ['base', 'serve', 'receive'];
-const phase = ref<Phase>('base');
-const useLibero = ref(false);
-const libero = computed(() => liberoTip(system.value, rotation.value, phase.value));
+const systemNames: SystemName[] = ['4-2', '5-1', '6-2']
+const systemName = ref<SystemName>('4-2')
+const system = computed(() => systems[systemName.value])
+const phases: Phase[] = ['base', 'serve', 'receive']
+const phase = ref<Phase>('base')
+const useLibero = ref(false)
+const libero = computed(() => liberoTip(system.value, rotation.value, phase.value))
 
-const tip = computed(() => setterTip(system.value, rotation.value));
+const tip = computed(() => setterTip(system.value, rotation.value))
 </script>
 
 <template>
@@ -76,7 +76,7 @@ const tip = computed(() => setterTip(system.value, rotation.value));
       </div>
       <button class="icon-btn" aria-label="Next rotation" @click="rotateForward">›</button>
     </nav>
-    <p class="step-label">Rotation {{  rotation + 1 }} of 6</p>
+    <p class="step-label">Rotation {{ rotation + 1 }} of 6</p>
 
     <section class="callout">
       <p class="callout-title">{{ phaseLabels[phase] }}</p>
@@ -87,7 +87,9 @@ const tip = computed(() => setterTip(system.value, rotation.value));
 
     <ul class="legend">
       <li><span class="swatch swatch-active"></span>Active setter</li>
-      <li v-if="system.setters.length > 1"><span class="swatch swatch-setter"></span>Other setter</li>
+      <li v-if="system.setters.length > 1">
+        <span class="swatch swatch-setter"></span>Other setter
+      </li>
       <li><span class="swatch swatch-player"></span>Player</li>
       <li v-if="useLibero"><span class="swatch swatch-libero"></span>Libero</li>
     </ul>
@@ -138,7 +140,9 @@ h1 {
   padding: 8px 18px;
   border-radius: 999px;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s;
+  transition:
+    background 0.2s,
+    color 0.2s;
 }
 
 .segmented button.selected {
@@ -175,7 +179,9 @@ h1 {
   font-size: 22px;
   line-height: 1;
   cursor: pointer;
-  transition: background 0.2s, transform 0.1s;
+  transition:
+    background 0.2s,
+    transform 0.1s;
 }
 
 .icon-btn:hover {
@@ -199,7 +205,9 @@ h1 {
   border-radius: 999px;
   background: var(--border-strong);
   cursor: pointer;
-  transition: width 0.25s, background 0.25s;
+  transition:
+    width 0.25s,
+    background 0.25s;
 }
 
 .step-dot.current {
