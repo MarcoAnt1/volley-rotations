@@ -1,10 +1,9 @@
+// libero.test.ts
 import { describe, expect, it } from 'vitest'
+import { isFrontRow } from './court'
 import { backRowMiddle, liberoReplaces } from './libero'
-import { SERVER_ZONE } from './formations'
-import { isFrontRow, positionOf, systems, type SystemName } from './rotations'
-
-const ROTATIONS = [0, 1, 2, 3, 4, 5]
-const SYSTEM_NAMES = Object.keys(systems) as SystemName[]
+import { ROTATIONS, SERVER_ZONE, positionOf } from './rotation'
+import { SYSTEM_NAMES, systems } from './systems'
 
 describe('liberoReplaces', () => {
   for (const name of SYSTEM_NAMES) {

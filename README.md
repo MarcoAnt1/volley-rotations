@@ -51,17 +51,25 @@ Built with **Vue 3**, **TypeScript** and **Vite**. The court is plain **SVG**, w
 
 ```
 src/
-├── data/
-│   ├── rotations.ts      # zones, rotation cycle, overlap rule, setter systems
-│   └── formations.ts     # where players stand in each situation
+├── domain/               # volleyball rules — plain TypeScript, no Vue, fully tested
+│   ├── court.ts          # zones, players, rows, zone coordinates
+│   ├── rotation.ts       # rotation cycle, positionOf, server zone
+│   ├── overlap.ts        # overlap rule, violations, legalize
+│   ├── systems.ts        # roles, 4-2 / 5-1 / 6-2, active setter
+│   ├── formations.ts     # default / serve / receive layouts
+│   └── libero.ts         # who the libero replaces
+├── content/
+│   └── rotations.ts      # the tips and labels learners read
 ├── composables/
 │   └── useRotation.ts    # current rotation + forward / back / jump
 ├── components/
 │   ├── Court.vue         # the court, dragging, overlap validation
 │   └── PlayerToken.vue   # one player: circle, label, pointer handling
-├── App.vue               # controls, tips, legend
-└── style.css             # design tokens (colors, shadows) + dark mode
+├── App.vue
+└── style.css
 ```
+
+Dependencies point one way: components → content → domain. The domain never imports Vue or content.
 
 A few ideas worth knowing before reading the code:
 

@@ -1,19 +1,12 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue'
-import {
-  positionCoords,
-  positionOf,
-  activeSetter,
-  overlapViolations,
-  PLAYERS,
-  type Position,
-  type PlayerId,
-  type Point,
-  type Violation,
-  type VolleySystem,
-} from '@/data/rotations'
-import { formation, SERVER_ZONE, type Phase } from '@/data/formations'
-import { liberoReplaces, BENCH_SPOT } from '@/data/libero'
+import { PLAYERS, positionCoords, type PlayerId, type Point, type Position } from '@/domain/court'
+import { formation, type Phase } from '@/domain/formations'
+import { BENCH_SPOT, liberoReplaces } from '@/domain/libero'
+import { overlapViolations, type Violation } from '@/domain/overlap'
+import { SERVER_ZONE, positionOf } from '@/domain/rotation'
+import { activeSetter, type VolleySystem } from '@/domain/systems'
+import { violationText } from '@/content/rotations'
 import PlayerToken from './PlayerToken.vue'
 
 const props = defineProps<{
@@ -184,7 +177,7 @@ const invalidPlayers = computed<Set<PlayerId>>(() => {
 
     <div class="footer-row">
       <p v-if="violations.length" class="warning">
-        ⚠ Overlap: {{ violations.map((v) => v.rule).join('; ') }}
+        ⚠ Overlap: {{ violations.map(violationText).join('; ') }}
       </p>
 
       <button class="reset" :disabled="!hasOverrides" @click="resetPositions">

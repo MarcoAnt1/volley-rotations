@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onBeforeUnmount } from 'vue'
-import type { PlayerId } from '@/data/rotations'
+import type { PlayerId } from '@/domain/court'
 
 const props = defineProps<{
   player: PlayerId
