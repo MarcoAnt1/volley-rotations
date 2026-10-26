@@ -5,14 +5,6 @@ import { activeSetter, type Role, type VolleySystem } from './systems'
 
 export type Phase = 'base' | 'serve' | 'receive'
 
-export const phaseTips: Record<Phase, string> = {
-  base: 'The rotational order: who stands in which zone. Every other situation starts from here.',
-  serve:
-    'We serve. The player in zone 1 serves from behind the end line; the front row waits at the net to block. The overlap rule applies to everyone except the server.',
-  receive:
-    'They serve. The two outside hitters and the libero (or the back-row middle, without one) form the passing line. The setter, the opposite and the front-row middle stay out of the way so the setter can reach the target. Every layout is legal under the overlap rule.',
-}
-
 // Serve receive, keyed by the zone the ACTIVE SETTER is in.
 // Passers: both outside hitters + the back-row middle.
 // Hiders: setter, opposite (or second setter), front-row middle.
