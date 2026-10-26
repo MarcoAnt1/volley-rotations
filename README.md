@@ -60,8 +60,6 @@ src/
 │   └── libero.ts         # who the libero replaces
 ├── content/
 │   └── rotations.ts      # the tips and labels learners read
-├── composables/
-│   └── useRotation.ts    # current rotation + forward / back / jump
 ├── components/
 │   ├── Court.vue         # the court, dragging, overlap validation
 │   └── PlayerToken.vue   # one player: circle, label, pointer handling
