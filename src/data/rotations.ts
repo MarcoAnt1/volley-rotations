@@ -135,3 +135,7 @@ export function setterTip(system: VolleySystem, rotation: number): string {
         : 'penetrates from the back row to the net to set';
     return `${system.blurb} This rotation the setter (${system.roles[setter]}) is in zone ${pos}(${front ? 'front' : 'back'}) - ${where}.`;
 }
+
+export type PlayerId = Position | 'L';
+
+export const PLAYERS: Position[] = [1, 2, 3, 4, 5, 6];

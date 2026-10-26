@@ -2,8 +2,9 @@
 import { ref, computed } from 'vue';
 import Court from './components/Court.vue';
 import { useRotation } from './composables/useRotation.js';
-import { systems, setterTip, type SystemName } from './data/rotations.js';
+import { systems, setterTip, type SystemName } from './data/rotations.ts';
 import { phaseLabels, phaseTips, type Phase } from './data/formations.ts';
+import { liberoTip } from './data/libero.ts';
 
 const { rotation, rotateForward, rotateBack, goTo } = useRotation();
 
@@ -12,6 +13,8 @@ const systemName = ref<SystemName>('5-1');
 const system = computed(() => systems[systemName.value]);
 const phases: Phase[] = ['base', 'serve', 'receive', 'defense'];
 const phase = ref<Phase>('base');
+const useLibero = ref(true);
+const libero = computed(() => liberoTip(system.value, rotation.value, phase.value));
 
 const tip = computed(() => setterTip(system.value, rotation.value));
 </script>
@@ -20,7 +23,7 @@ const tip = computed(() => setterTip(system.value, rotation.value));
   <main class="page">
     <header>
       <h1>Volleyball Rotations</h1>
-      <p>Step through the six rotations and see where everyone stands.</p>
+      <p class="subtitle">Step through the six rotations and see where everyone stands.</p>
     </header>
 
     <div class="segmented" role="tablist" aria-label="Setter system">
@@ -49,8 +52,14 @@ const tip = computed(() => setterTip(system.value, rotation.value));
       </button>
     </div>
 
+    <label class="switch">
+      <input v-model="useLibero" type="checkbox" />
+      <span class="track" aria-hidden="true"></span>
+      Libero
+    </label>
+
     <section class="card">
-      <Court :rotation="rotation" :system="system" :phase="phase" />
+      <Court :rotation="rotation" :system="system" :phase="phase" :use-libero="useLibero" />
     </section>
 
     <nav class="stepper" aria-label="Rotation">
@@ -73,12 +82,14 @@ const tip = computed(() => setterTip(system.value, rotation.value));
       <p class="callout-title">{{ phaseLabels[phase] }}</p>
       <p>{{ phaseTips[phase] }}</p>
       <p class="callout-setter">{{ tip }}</p>
+      <p v-if="useLibero" class="callout-setter">{{ libero }}</p>
     </section>
 
     <ul class="legend">
       <li><span class="swatch swatch-active"></span>Active setter</li>
       <li v-if="system.setters.length > 1"><span class="swatch swatch-setter"></span>Other setter</li>
       <li><span class="swatch swatch-player"></span>Player</li>
+      <li v-if="useLibero"><span class="swatch swatch-libero"></span>Libero</li>
     </ul>
 
     <p class="roles">S - Setter · OH - Outside hitter · MB - Middle blocker · OPP - Opposite</p>
@@ -271,5 +282,62 @@ h1 {
 .roles {
   font-size: 12px;
   color: var(--muted);
+}
+
+/* A real checkbox, visually replaced by a sliding track */
+.switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+}
+
+.switch input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.track {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  border-radius: 999px;
+  background: var(--border-strong);
+  transition: background 0.2s;
+}
+
+.track::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s;
+}
+
+.switch input:checked + .track {
+  background: var(--libero);
+}
+
+.switch input:checked + .track::after {
+  transform: translateX(16px);
+}
+
+.switch input:focus-visible + .track {
+  outline: 2px solid var(--libero);
+  outline-offset: 2px;
+}
+
+.swatch-libero {
+  background: var(--libero);
 }
 </style>

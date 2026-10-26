@@ -1,19 +1,21 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import type { Position } from '@/data/rotations';
+import type { PlayerId } from '@/data/rotations';
 
 const props = defineProps<{
-  player: Position;
+  player: PlayerId;
   label: string;
   x: number;
   y: number;
   isSetter: boolean;
   isActiveSetter: boolean;
+  isLibero: boolean;
+  benched: boolean;
   invalid: boolean;
 }>();
 
 const emit = defineEmits<{
-    drag: [player: Position, event: PointerEvent];
+    drag: [player: PlayerId, event: PointerEvent];
 }>();
 
 const dragging = ref(false);
@@ -37,7 +39,7 @@ function onPointerUp(event: PointerEvent) {
 <template>
     <g
         class="token"
-        :class="{ setter: isSetter, 'active-setter': isActiveSetter, dragging, invalid }"
+        :class="{ setter: isSetter, 'active-setter': isActiveSetter, libero: isLibero, benched, dragging, invalid }"
         :transform="`translate(${x}, ${y})`"
         @pointerdown="onPointerDown"
         @pointermove="onPointerMove"
@@ -72,15 +74,6 @@ function onPointerUp(event: PointerEvent) {
     filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.35));
 }
 
-.token text {
-    fill: var(--player-ink);
-    font: 700 12px Inter, system-ui, sans-serif;
-    letter-spacing: 0.02em;
-    user-select: none;
-    pointer-events: none;
-}
-
-/* Order matters: equal specificity, so the last match wins */
 .token.setter circle {
     stroke: var(--accent);
 }
@@ -92,6 +85,18 @@ function onPointerUp(event: PointerEvent) {
 
 .token.active-setter text {
     fill: var(--accent-ink);
+}
+
+.token.benched {
+    opacity: 0.6;
+}
+
+.token.libero circle {
+    fill: var(--libero);
+}
+
+.token.libero text {
+    fill: var(--libero-ink);
 }
 
 .token.invalid circle {

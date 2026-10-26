@@ -5,6 +5,7 @@ import {
     isFrontRow,
     FRONT_BEHIND,
     LEFT_OF,
+    PLAYERS,
     type Position,
     type Point,
     type Role,
@@ -23,13 +24,11 @@ import {
 export const phaseTips: Record<Phase, string> = {
     base: 'The rotational order: who stands in which zone. Every other situation starts from here.',
     serve: 'We serve. The player in zone 1 serves from behind the end line; the front row waits at the net to block. The overlap rule applies to everyone except the server.',
-    receive: 'They serve. The two outside hitters and the back-row middle form the passing line. The setter, the opposite and the front-row middle stay out of the way so the setter can reach the target. Every layout is legal under the overlap rule.',
+    receive: 'They serve. The two outside hitters and the libero (or the back-row middle, without one) form the passing line. The setter, the opposite and the front-row middle stay out of the way so the setter can reach the target. Every layout is legal under the overlap rule.',
     defense: 'The serve is gone, so players switch to their specialty spots: outside hitters left, middles in the middle, setter and opposite right. Overlap no longer applies.',
 };
 
 export const SERVER_ZONE: Position = 1;
-
-const PLAYERS: Position[] = [1, 2, 3, 4, 5, 6];
 
 // Serve receive, keyed by the zone the ACTIVE SETTER is in.
 // Passers: both outside hitters + the back-row middle.
