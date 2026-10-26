@@ -40,6 +40,10 @@ const replaced = computed<Position | null>(() =>
     props.useLibero ? liberoReplaces(props.system, props.rotation, props.phase) : null,
 );
 
+const BENCH_ROOM = 70;
+const viewLeft = computed(() => (props.useLibero ? -BENCH_ROOM : 0));
+const viewWidth = computed(() => 360 - viewLeft.value);
+
 // Where someone stands before any dragging.
 function spotFor(id: PlayerId): Point {
     if (id === 'L') {
@@ -102,7 +106,6 @@ const coordByPosition = computed<Record<Position, Point>>(() => {
 });
 
 const violations = computed<Violation[]>(() => {
-    if (props.phase === 'defense') return [];
     const exempt = props.phase === 'serve' ? SERVER_ZONE : undefined;
     return overlapViolations(coordByPosition.value, exempt);
 });
@@ -119,7 +122,7 @@ const invalidPlayers = computed<Set<PlayerId>>(() => {
 
 <template>
     <div class="court-wrap">
-        <svg ref="svg" class="court" viewBox="-70 0 430 390" xmlns="http://www.w3.org/2000/svg">
+        <svg ref="svg" class="court" :viewBox="`${viewLeft} 0 ${viewWidth} 390`" xmlns="http://www.w3.org/2000/svg">
             <!-- Free zone: the area around the court -->
             <rect class="free-zone" x="-70" y="0" width="430" height="390" rx="16"/>
 

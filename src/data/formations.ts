@@ -12,20 +12,18 @@ import {
     type VolleySystem
  } from "./rotations";
 
- export type Phase = 'base' | 'serve' | 'receive' | 'defense';
+ export type Phase = 'base' | 'serve' | 'receive';
 
  export const phaseLabels: Record<Phase, string> = {
     base: 'Default',
     serve: 'Serving',
     receive: 'Reception',
-    defense: 'Defense',
  };
 
 export const phaseTips: Record<Phase, string> = {
     base: 'The rotational order: who stands in which zone. Every other situation starts from here.',
     serve: 'We serve. The player in zone 1 serves from behind the end line; the front row waits at the net to block. The overlap rule applies to everyone except the server.',
     receive: 'They serve. The two outside hitters and the libero (or the back-row middle, without one) form the passing line. The setter, the opposite and the front-row middle stay out of the way so the setter can reach the target. Every layout is legal under the overlap rule.',
-    defense: 'The serve is gone, so players switch to their specialty spots: outside hitters left, middles in the middle, setter and opposite right. Overlap no longer applies.',
 };
 
 export const SERVER_ZONE: Position = 1;
@@ -67,7 +65,6 @@ const receiveFormations: Record<Position, Record<Position, Point>> = {
     },
 };
 
-// Defense: each player goes to the side that matches their role.
 type Side = 'left' | 'middle' | 'right';
 
 function sideOf(role: Role): Side {
@@ -76,17 +73,17 @@ function sideOf(role: Role): Side {
     return 'right';
 }
 
-const defenseSpots: Record<'front' | 'back', Record<Side, Point>> = {
+const specialtySpots: Record<'front' | 'back', Record<Side, Point>> = {
     front: { left: { x: 90, y: 65}, middle: { x: 180, y: 65}, right: { x: 270, y: 65}},
     back: { left: { x: 70, y: 250}, middle: { x: 180, y: 295}, right: { x: 290, y: 250}},
 };
 
-function defenseFormation(system: VolleySystem, rotation: number): Record<Position, Point> {
+function specialtyFormation(system: VolleySystem, rotation: number): Record<Position, Point> {
     const map = {} as Record<Position, Point>;
     for (const player of PLAYERS) {
         const zone = positionOf(player, rotation);
         const row = isFrontRow(zone) ? 'front' : 'back';
-        map[zone] = defenseSpots[row][sideOf(system.roles[player])];
+        map[zone] = specialtySpots[row][sideOf(system.roles[player])];
     }
     return map;
 }
@@ -130,10 +127,10 @@ function legalize(target: Record<Position, Point>, exempt?: Position): Record<Po
 // Where the server stands: behind the end line, on the right.
 const SERVER_SPOT: Point = { x: 270, y: 350 };
 
-// Serving: everyone starts as close to their defense spot as the
+// Serving: everyone starts as close to their specialty spot as the
 // overlap rule allows, so the switch after the serve is short.
 function serveFormation(system: VolleySystem, rotation: number): Record<Position, Point> {
-    const legal = legalize(defenseFormation(system, rotation), SERVER_ZONE);
+    const legal = legalize(specialtyFormation(system, rotation), SERVER_ZONE);
     legal[SERVER_ZONE] = SERVER_SPOT;
     return legal;
 }
@@ -146,7 +143,5 @@ export function formation(phase: Phase, system: VolleySystem, rotation: number):
             return serveFormation(system, rotation);
         case 'receive':
             return receiveFormations[positionOf(activeSetter(system, rotation), rotation)];
-        case 'defense':
-            return defenseFormation(system, rotation);
     }
 }

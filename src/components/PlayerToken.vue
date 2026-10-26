@@ -44,6 +44,8 @@ function onPointerUp(event: PointerEvent) {
         @pointerdown="onPointerDown"
         @pointermove="onPointerMove"
         @pointerup="onPointerUp"
+        @pointercancel="onPointerUp"
+        @touchstart.prevent
     >
         <circle r="24" />
         <text text-anchor="middle" dominant-baseline="central">{{ label }}</text>
@@ -54,6 +56,8 @@ function onPointerUp(event: PointerEvent) {
 .token {
     cursor: grab;
     touch-action: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
     transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
