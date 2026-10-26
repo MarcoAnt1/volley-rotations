@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue'
-import { PLAYERS, positionCoords, type PlayerId, type Point, type Position } from '@/domain/court'
+import { PLAYERS, type PlayerId, type Point, type Position } from '@/domain/court'
+import CourtFloor from './CourtFloor.vue'
+import PlayerToken from './PlayerToken.vue'
 import { formation, type Phase } from '@/domain/formations'
 import { BENCH_SPOT, liberoReplaces } from '@/domain/libero'
 import { overlapViolations, type Violation } from '@/domain/overlap'
 import { SERVER_ZONE, positionOf } from '@/domain/rotation'
 import { activeSetter, type VolleySystem } from '@/domain/systems'
 import { violationText } from '@/content/rotations'
-import PlayerToken from './PlayerToken.vue'
 
 const props = defineProps<{
   rotation: number
@@ -16,7 +17,6 @@ const props = defineProps<{
   useLibero: boolean
 }>()
 
-const zones: Position[] = PLAYERS
 const everyone: PlayerId[] = [...PLAYERS, 'L']
 
 // Who we draw: the six in the lineup, plus the libero when enabled.
@@ -94,7 +94,9 @@ const personByZone = computed<Record<Position, PlayerId>>(() => {
 
 const coordByPosition = computed<Record<Position, Point>>(() => {
   const map = {} as Record<Position, Point>
-  for (const zone of zones) map[zone] = coordsFor(personByZone.value[zone])
+  for (const zone of PLAYERS) {
+    map[zone] = coordsFor(personByZone.value[zone])
+  }
   return map
 })
 
@@ -121,43 +123,7 @@ const invalidPlayers = computed<Set<PlayerId>>(() => {
       :viewBox="`${viewLeft} 0 ${viewWidth} 390`"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <!-- Free zone: the area around the court -->
-      <rect class="free-zone" x="-70" y="0" width="430" height="390" rx="16" />
-
-      <!-- Bench: where whoever is off court waits -->
-      <g v-if="useLibero">
-        <rect class="bench" x="-62" y="150" width="56" height="200" rx="12" />
-        <text class="bench-label" x="-34" y="168" text-anchor="middle">BENCH</text>
-      </g>
-
-      <text class="net-label" x="180" y="22" text-anchor="middle">NET</text>
-
-      <!-- Court floor, with the front zone slightly lighter -->
-      <rect class="floor" x="40" y="40" width="280" height="280" />
-      <rect class="front-zone" x="40" y="40" width="280" height="93" />
-
-      <!-- Attack line: 3m from the net = one third of the 9m depth -->
-      <line class="attack-line" x1="40" y1="133" x2="320" y2="133" />
-
-      <line class="zone-line" x1="133.3" y1="40" x2="133.3" y2="320" />
-      <line class="zone-line" x1="226.7" y1="40" x2="226.7" y2="320" />
-
-      <text
-        v-for="zone in zones"
-        :key="`zone-${zone}`"
-        class="zone-number"
-        :x="positionCoords[zone].x - 34"
-        :y="positionCoords[zone].y - 34"
-        text-anchor="middle"
-        dominant-baseline="central"
-      >
-        {{ zone }}
-      </text>
-
-      <!-- Net reaches a bit past the sidelines, with posts at both ends -->
-      <line class="net" x1="28" y1="40" x2="332" y2="40" />
-      <circle class="net-post" cx="28" cy="40" r="4" />
-      <circle class="net-post" cx="332" cy="40" r="4" />
+      <CourtFloor :show-bench="useLibero" />
 
       <PlayerToken
         v-for="id in people"
@@ -204,62 +170,6 @@ const invalidPlayers = computed<Set<PlayerId>>(() => {
   touch-action: none;
 }
 
-.free-zone {
-  fill: var(--free-zone);
-}
-
-.floor {
-  fill: var(--court);
-  stroke: var(--court-line);
-  stroke-width: 2;
-}
-
-.front-zone {
-  fill: #ffffff;
-  opacity: 0.05;
-}
-
-.net {
-  stroke: var(--net);
-  stroke-width: 3;
-  stroke-linecap: round;
-}
-
-.net-post {
-  fill: var(--net);
-}
-
-.net-label {
-  fill: var(--muted);
-  font:
-    600 10px Inter,
-    system-ui,
-    sans-serif;
-  letter-spacing: 0.2em;
-}
-
-.attack-line {
-  stroke: var(--court-line);
-  stroke-width: 2;
-}
-
-.zone-line {
-  stroke: #ffffff;
-  stroke-width: 1;
-  stroke-dasharray: 3 5;
-  opacity: 0.25;
-}
-
-.zone-number {
-  fill: #ffffff;
-  font:
-    600 14px Inter,
-    system-ui,
-    sans-serif;
-  opacity: 0.35;
-  pointer-events: none;
-}
-
 .footer-row {
   display: flex;
   align-items: center;
@@ -298,21 +208,5 @@ const invalidPlayers = computed<Set<PlayerId>>(() => {
 .reset:disabled {
   opacity: 0.4;
   cursor: default;
-}
-
-.bench {
-  fill: none;
-  stroke: var(--border-strong);
-  stroke-width: 1.5;
-  stroke-dasharray: 4 4;
-}
-
-.bench-label {
-  fill: var(--muted);
-  font:
-    600 9px Inter,
-    system-ui,
-    sans-serif;
-  letter-spacing: 0.15em;
 }
 </style>
