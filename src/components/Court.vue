@@ -106,7 +106,6 @@ const coordByPosition = computed<Record<Position, Point>>(() => {
 });
 
 const violations = computed<Violation[]>(() => {
-    if (props.phase === 'defense') return [];
     const exempt = props.phase === 'serve' ? SERVER_ZONE : undefined;
     return overlapViolations(coordByPosition.value, exempt);
 });

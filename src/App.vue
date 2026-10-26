@@ -11,7 +11,7 @@ const { rotation, rotateForward, rotateBack, goTo } = useRotation();
 const systemNames: SystemName[] = [ '4-2', '5-1', '6-2'];
 const systemName = ref<SystemName>('4-2');
 const system = computed(() => systems[systemName.value]);
-const phases: Phase[] = ['base', 'serve', 'receive', 'defense'];
+const phases: Phase[] = ['base', 'serve', 'receive'];
 const phase = ref<Phase>('base');
 const useLibero = ref(false);
 const libero = computed(() => liberoTip(system.value, rotation.value, phase.value));

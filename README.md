@@ -7,7 +7,7 @@ An interactive, top-down court that teaches volleyball rotations: step through a
 - **Six rotations, animated.** Step forward and back, or jump to any rotation; players slide clockwise between zones.
 - **Roles on every player.** S, OH, MB, OPP, plus fixed zone numbers 1–6 painted on the court.
 - **Three setter systems.** 5-1, 6-2 and 4-2, with the active setter highlighted and a tip on where they should be.
-- **Four situations.** Default, Serving, Reception and Defense, each with its own formation.
+- **Three situations.** Default, Serving and Reception, each with its own formation. 
 - **Drag players.** Move anyone around the court with mouse or touch.
 - **Overlap validation.** Players who break the overlap rule turn red, with a warning naming the rule. The check follows the real rules: the server is exempt, and there's no check once the rally is on.
 - **Light and dark mode.** Follows your system setting.
@@ -69,7 +69,6 @@ A few ideas worth knowing before reading the code:
 - **Rules are plain data.** The overlap rule is two lists of zone pairs (`FRONT_BEHIND`, `LEFT_OF`) in `rotations.ts`, used both to validate positions and to generate legal ones. The data files contain no Vue code.
 - **Formations are "where the player in each zone stands".**
   - Reception layouts are hand-made, one per zone of the active setter, so they work for every system.
-  - Defense is derived from roles.
-  - The serve formation starts from each player's defense spot, and `legalize()` moves players until the overlap rule holds.
+  - The serve formation starts from each player's specialty spot (outside hitters left, middles middle, setter/opposite right), and `legalize()` moves players until the overlap rule holds.
 - **Animation is just CSS.** Each player is an SVG `<g>` positioned with `translate()`; a CSS transition on `transform` makes them slide.
 - **Dragging uses pointer events**, so mouse and touch share one code path. `getScreenCTM()` converts screen coordinates into court coordinates.
