@@ -1,12 +1,7 @@
-import {
-  positionOf,
-  isFrontRow,
-  PLAYERS,
-  type Position,
-  type Point,
-  type VolleySystem,
-} from './rotations'
-import { SERVER_ZONE, type Phase } from './formations'
+import { PLAYERS, isFrontRow, type Point, type Position } from './court'
+import type { Phase } from './formations'
+import { SERVER_ZONE, positionOf } from './rotation'
+import type { VolleySystem } from './systems'
 
 export const BENCH_SPOT: Point = { x: -34, y: 250 }
 

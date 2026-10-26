@@ -1,9 +1,10 @@
+// formations.test.ts
 import { describe, expect, it } from 'vitest'
-import { SERVER_ZONE, formation, type Phase } from './formations'
-import { overlapViolations, systems, type SystemName } from './rotations'
+import { formation, type Phase } from './formations'
+import { overlapViolations } from './overlap'
+import { ROTATIONS, SERVER_ZONE } from './rotation'
+import { SYSTEM_NAMES, systems } from './systems'
 
-const ROTATIONS = [0, 1, 2, 3, 4, 5]
-const SYSTEM_NAMES = Object.keys(systems) as SystemName[]
 const PHASES: Phase[] = ['base', 'serve', 'receive']
 
 describe('every formation obeys the overlap rule', () => {

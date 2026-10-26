@@ -1,16 +1,7 @@
-import {
-  positionCoords,
-  positionOf,
-  activeSetter,
-  isFrontRow,
-  FRONT_BEHIND,
-  LEFT_OF,
-  PLAYERS,
-  type Position,
-  type Point,
-  type Role,
-  type VolleySystem,
-} from './rotations'
+import { PLAYERS, isFrontRow, positionCoords, type Point, type Position } from './court'
+import { legalize } from './overlap'
+import { SERVER_ZONE, positionOf } from './rotation'
+import { activeSetter, type Role, type VolleySystem } from './systems'
 
 export type Phase = 'base' | 'serve' | 'receive'
 
@@ -27,8 +18,6 @@ export const phaseTips: Record<Phase, string> = {
   receive:
     'They serve. The two outside hitters and the libero (or the back-row middle, without one) form the passing line. The setter, the opposite and the front-row middle stay out of the way so the setter can reach the target. Every layout is legal under the overlap rule.',
 }
-
-export const SERVER_ZONE: Position = 1
 
 // Serve receive, keyed by the zone the ACTIVE SETTER is in.
 // Passers: both outside hitters + the back-row middle.
@@ -116,39 +105,6 @@ function specialtyFormation(system: VolleySystem, rotation: number): Record<Posi
 
 // Minimum spacing between neighbours, so circles (diameter 48) don't overlap.
 const GAP = 50
-
-// Nudge a formation until it obeys the overlap rule: any pair that is out
-// of order (or too close) is pushed apart around its midpoint. Fixing one
-// pair can disturb another, so we repeat the pass until things settle.
-function legalize(target: Record<Position, Point>, exempt?: Position): Record<Position, Point> {
-  // Work on copies: the target points may be shared constants.
-  const at = {} as Record<Position, Point>
-  for (const zone of PLAYERS) at[zone] = { ...target[zone] }
-
-  for (let pass = 0; pass < 20; pass++) {
-    for (const [left, right] of LEFT_OF) {
-      if (left === exempt || right === exempt) continue
-      const a = at[left]
-      const b = at[right]
-      if (b.x - a.x < GAP) {
-        const mid = (a.x + b.x) / 2
-        a.x = mid - GAP / 2
-        b.x = mid + GAP / 2
-      }
-    }
-    for (const [front, back] of FRONT_BEHIND) {
-      if (front === exempt || back === exempt) continue
-      const a = at[front]
-      const b = at[back]
-      if (b.y - a.y < GAP) {
-        const mid = (a.y + b.y) / 2
-        a.y = mid - GAP / 2
-        b.y = mid + GAP / 2
-      }
-    }
-  }
-  return at
-}
 
 // Where the server stands: behind the end line, on the right.
 const SERVER_SPOT: Point = { x: 270, y: 350 }

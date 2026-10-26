@@ -1,6 +1,5 @@
 import { ref } from 'vue'
-
-const NUM_ROTATIONS = 6
+import { NUM_ROTATIONS } from '@/domain/rotation'
 
 export function useRotation() {
   const rotation = ref(0)
