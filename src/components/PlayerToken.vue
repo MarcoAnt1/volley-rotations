@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onBeforeUnmount } from 'vue';
 import type { PlayerId } from '@/data/rotations';
 
 const props = defineProps<{
-  player: PlayerId;
-  label: string;
-  x: number;
-  y: number;
-  isSetter: boolean;
-  isActiveSetter: boolean;
-  isLibero: boolean;
-  benched: boolean;
-  invalid: boolean;
+    player: PlayerId;
+    label: string;
+    x: number;
+    y: number;
+    isSetter: boolean;
+    isActiveSetter: boolean;
+    isLibero: boolean;
+    benched: boolean;
+    invalid: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -20,20 +20,39 @@ const emit = defineEmits<{
 
 const dragging = ref(false);
 
+// Which finger (or mouse) is dragging us. Not reactive: the template never shows it.
+let activePointer: number | null = null;
+
 function onPointerDown(event: PointerEvent) {
+    // Ignore right-clicks, and a second finger while one is already dragging.
+    if (event.button !== 0 || activePointer !== null) return;
+
+    activePointer = event.pointerId;
     dragging.value = true;
-    (event.currentTarget as Element).setPointerCapture(event.pointerId);
+
+    // Follow the pointer anywhere on the page, not just over this circle.
+    window.addEventListener('pointermove', onPointerMove);
+    window.addEventListener('pointerup', stopDragging);
+    window.addEventListener('pointercancel', stopDragging);
 }
 
 function onPointerMove(event: PointerEvent) {
-    if (!dragging.value) return;
+    if (event.pointerId !== activePointer) return;
     emit('drag', props.player, event);
 }
 
-function onPointerUp(event: PointerEvent) {
+function stopDragging(event?: PointerEvent) {
+    if (event && event.pointerId !== activePointer) return;
+
+    activePointer = null;
     dragging.value = false;
-    (event.currentTarget as Element).releasePointerCapture(event.pointerId);
+    window.removeEventListener('pointermove', onPointerMove);
+    window.removeEventListener('pointerup', stopDragging);
+    window.removeEventListener('pointercancel', stopDragging);
 }
+
+// If this token disappears mid-drag (e.g. the libero is switched off), clean up.
+onBeforeUnmount(() => stopDragging());
 </script>
 
 <template>
@@ -42,10 +61,6 @@ function onPointerUp(event: PointerEvent) {
         :class="{ setter: isSetter, 'active-setter': isActiveSetter, libero: isLibero, benched, dragging, invalid }"
         :transform="`translate(${x}, ${y})`"
         @pointerdown="onPointerDown"
-        @pointermove="onPointerMove"
-        @pointerup="onPointerUp"
-        @pointercancel="onPointerUp"
-        @touchstart.prevent
     >
         <circle r="24" />
         <text text-anchor="middle" dominant-baseline="central">{{ label }}</text>
@@ -55,7 +70,6 @@ function onPointerUp(event: PointerEvent) {
 <style scoped>
 .token {
     cursor: grab;
-    touch-action: none;
     -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none;
     transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);

@@ -203,6 +203,7 @@ const invalidPlayers = computed<Set<PlayerId>>(() => {
     max-width: 460px;
     height: auto;
     user-select: none;
+    touch-action: none;
 }
 
 .free-zone {
