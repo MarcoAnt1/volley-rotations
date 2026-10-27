@@ -15,6 +15,12 @@ export const lessons: Lesson[] = [
     component: () => import('./roles/RolesLesson.vue'),
   },
   {
+    slug: 'which-role',
+    title: 'Which role are you?',
+    summary: 'Six quick questions to find your spot on the court.',
+    component: () => import('./quiz/QuizLesson.vue'),
+  },
+  {
     slug: 'rotations',
     title: 'Rotations',
     summary: 'Step through the six rotations and see where everyone stands.',
