@@ -66,7 +66,7 @@ onBeforeUnmount(() => stopDragging())
       benched,
       dragging,
       invalid,
-      dimmed
+      dimmed,
     }"
     :transform="`translate(${x}, ${y})`"
     @pointerdown="onPointerDown"

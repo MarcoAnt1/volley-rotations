@@ -30,7 +30,6 @@ const libero = computed(() => liberoTip(system.value, rotation.value, phase.valu
       <p class="subtitle">Step through the six rotations and see where everyone stands.</p>
     </header>
 
-
     <SegmentedControl v-model="systemName" :options="SYSTEM_NAMES" label="Setter system" />
     <SegmentedControl v-model="phase" :options="PHASES" :labels="phaseLabels" label="Situation" />
 
