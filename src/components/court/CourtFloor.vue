@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { PLAYERS, positionCoords } from '@/domain/court'
 
-defineProps<{ showBench: boolean }>()
+defineProps<{ viewLeft: number, viewWidth: number, showBench: boolean }>()
 </script>
 
 <template>
   <g>
     <!-- Free zone: the area around the court -->
-    <rect class="free-zone" x="-70" y="0" width="430" height="390" rx="16" />
+    <rect class="free-zone" :x="`${viewLeft}`" y="0" :width="`${viewWidth}`" height="390" rx="16" />
 
     <!-- Bench: where whoever is off court waits -->
     <g v-if="showBench">

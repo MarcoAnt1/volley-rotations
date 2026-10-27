@@ -76,3 +76,15 @@ body {
 button {
   font: inherit;
 }
+
+h1 {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 15px;
+}
