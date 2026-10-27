@@ -63,7 +63,14 @@ src/
 ├── components/
 │   ├── Court.vue         # the court, dragging, overlap validation
 │   └── PlayerToken.vue   # one player: circle, label, pointer handling
-├── App.vue
+├── lessons/
+│   ├── index.ts              # the lesson catalog (drives home page + routes)
+│   └── rotations/
+│       └── RotationsLesson.vue
+├── pages/
+│   └── HomePage.vue
+├── router.ts                 # hash history, one route per lesson
+├── App.vue                   # shell: top bar + <RouterView />
 └── style.css
 ```
 
@@ -78,3 +85,11 @@ A few ideas worth knowing before reading the code:
   - The serve formation starts from each player's specialty spot (outside hitters left, middles middle, setter/opposite right), and `legalize()` moves players until the overlap rule holds.
 - **Animation is just CSS.** Each player is an SVG `<g>` positioned with `translate()`; a CSS transition on `transform` makes them slide.
 - **Dragging uses pointer events**, so mouse and touch share one code path. `getScreenCTM()` converts screen coordinates into court coordinates.
+
+## Adding a lesson
+
+1. Put any new rules in `src/domain/` (with tests) and the words in `src/content/`.
+2. Create `src/lessons/<slug>/<Name>Lesson.vue`, built from `components/ui` and `components/court`.
+3. Add an entry to `src/lessons/index.ts`.
+
+The home page and the route (`#/lessons/<slug>`) appear automatically.

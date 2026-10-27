@@ -123,7 +123,7 @@ const invalidPlayers = computed<Set<PlayerId>>(() => {
       :viewBox="`${viewLeft} 0 ${viewWidth} 390`"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <CourtFloor :show-bench="useLibero" />
+      <CourtFloor :viewLeft="viewLeft" :view-width="viewWidth" :show-bench="useLibero" />
 
       <PlayerToken
         v-for="id in people"
