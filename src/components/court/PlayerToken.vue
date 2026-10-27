@@ -12,6 +12,7 @@ const props = defineProps<{
   isLibero: boolean
   benched: boolean
   invalid: boolean
+  dimmed: boolean
 }>()
 
 const emit = defineEmits<{
@@ -65,6 +66,7 @@ onBeforeUnmount(() => stopDragging())
       benched,
       dragging,
       invalid,
+      dimmed
     }"
     :transform="`translate(${x}, ${y})`"
     @pointerdown="onPointerDown"
@@ -96,6 +98,10 @@ onBeforeUnmount(() => stopDragging())
     fill 0.2s,
     stroke 0.2s,
     filter 0.2s;
+}
+
+.token.dimmed {
+  opacity: 0.2;
 }
 
 .token.dragging circle {

@@ -51,21 +51,3 @@ const libero = computed(() => liberoTip(system.value, rotation.value, phase.valu
     <CourtLegend :system="system" :use-libero="useLibero" />
   </article>
 </template>
-
-<style scoped>
-.lesson {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-}
-
-.card {
-  width: 100%;
-  padding: 12px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  box-shadow: var(--shadow-md);
-}
-</style>

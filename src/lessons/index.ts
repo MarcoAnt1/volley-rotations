@@ -9,6 +9,12 @@ export interface Lesson {
 
 export const lessons: Lesson[] = [
   {
+    slug: 'roles',
+    title: 'Positions & roles',
+    summary: 'Meet the five roles and see where each one plays.',
+    component: () => import('./roles/RolesLesson.vue'),
+  },
+  {
     slug: 'rotations',
     title: 'Rotations',
     summary: 'Step through the six rotations and see where everyone stands.',

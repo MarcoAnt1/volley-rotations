@@ -15,6 +15,7 @@ const props = defineProps<{
   system: VolleySystem
   phase: Phase
   useLibero: boolean
+  focus?: PlayerId[]
 }>()
 
 const everyone: PlayerId[] = [...PLAYERS, 'L']
@@ -137,6 +138,7 @@ const invalidPlayers = computed<Set<PlayerId>>(() => {
         :is-libero="id === 'L'"
         :benched="isBenched(id)"
         :invalid="invalidPlayers.has(id)"
+        :dimmed="focus !== undefined && !focus.includes(id)"
         @drag="onDrag"
       />
     </svg>
