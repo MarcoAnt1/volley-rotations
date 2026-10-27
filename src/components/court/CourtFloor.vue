@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { PLAYERS, positionCoords } from '@/domain/court'
 
-defineProps<{ viewLeft: any, viewWidth: any, showBench: boolean }>()
+defineProps<{ viewLeft: number, viewWidth: number, showBench: boolean }>()
 </script>
 
 <template>

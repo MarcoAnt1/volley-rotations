@@ -1,6 +1,6 @@
 # Volleyball Rotations
 
-An interactive, top-down court that teaches volleyball rotations: step through all six rotations, see where the setter goes, and watch how players line up when serving, receiving and defending.
+An interactive, top-down court that teaches volleyball rotations: step through all six rotations, see where the setter goes, and watch how players line up when serving and receiving.
 
 ## Features
 
@@ -47,7 +47,7 @@ Then open the local URL Vite prints.
 
 ## How it works
 
-Built with **Vue 3**, **TypeScript** and **Vite**. The court is plain **SVG**, with no canvas or chart library and no runtime dependencies besides Vue.
+Built with **Vue 3**, **TypeScript** and **Vite**. The court is plain **SVG**, with no canvas or chart library and no runtime dependencies besides Vue and Vue Router.
 
 ```
 src/
@@ -61,8 +61,16 @@ src/
 ├── content/
 │   └── rotations.ts      # the tips and labels learners read
 ├── components/
-│   ├── Court.vue         # the court, dragging, overlap validation
-│   └── PlayerToken.vue   # one player: circle, label, pointer handling
+│   ├── ui/                   # generic widgets — no volleyball knowledge
+│   │   ├── SegmentedControl.vue
+│   │   ├── ToggleSwitch.vue
+│   │   ├── StepperNav.vue
+│   │   └── InfoCallout.vue
+│   └── court/                # the court and everything drawn on it
+│       ├── Court.vue         # formation, dragging, overlap validation
+│       ├── CourtFloor.vue
+│       ├── PlayerToken.vue
+│       └── CourtLegend.vue
 ├── lessons/
 │   ├── index.ts              # the lesson catalog (drives home page + routes)
 │   └── rotations/
