@@ -18,6 +18,7 @@ export const phaseLabels: Record<Phase, string> = {
   base: 'Default',
   serve: 'Serving',
   receive: 'Reception',
+  play: 'In play'
 }
 
 export const phaseTips: Record<Phase, string> = {
@@ -26,6 +27,7 @@ export const phaseTips: Record<Phase, string> = {
     'We serve. The player in zone 1 serves from behind the end line; the front row waits at the net to block. The overlap rule applies to everyone except the server.',
   receive:
     'They serve. The two outside hitters and the libero (or the back-row middle, without one) form the passing line. The setter, the opposite and the front-row middle stay out of the way so the setter can reach the target. Every layout is legal under the overlap rule.',
+  play: 'The ball is in play, so the overlap rule no longer applies. Everyone switches to the spot of their job: outside hitters left, middles in the middle, setter and opposite right.',
 }
 
 export function setterTip(system: VolleySystem, rotation: number): string {

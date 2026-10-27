@@ -1,11 +1,18 @@
 // The words of the Positions & roles lesson.
 import type { RoleGroup } from '@/domain/roles'
+import type { Phase } from '@/domain/formations'
 
 export interface RoleInfo {
   name: string
   summary: string
   duties: string[]
+  playsAt: string
   traits: string
+}
+
+export const viewLabels: Partial<Record<Phase, string>> = {
+  base: 'Before the serve',
+  play: 'In play',
 }
 
 // Short labels for the role picker; they match the labels on the court.
@@ -27,6 +34,7 @@ export const roleInfo: Record<RoleGroup, RoleInfo> = {
       'Blocks on the right side when in the front row.',
     ],
     traits: 'Soft hands, quick decisions, and a good read of the other team’s block.',
+    playsAt: 'Right side. Front row: at the net, near zone 2. Back row: zone 1, running to the net to set.',
   },
   outside: {
     name: 'Outside hitter',
@@ -37,6 +45,7 @@ export const roleInfo: Record<RoleGroup, RoleInfo> = {
       'Plays defense in the back row and blocks the other team’s right side.',
     ],
     traits: 'Complete: passing, attacking and defending, all at a good level.',
+    playsAt: 'Left side. Front row: zone 4. Back row: zone 5, passing and defending.',
   },
   middle: {
     name: 'Middle blocker',
@@ -47,6 +56,7 @@ export const roleInfo: Record<RoleGroup, RoleInfo> = {
       'Is usually replaced by the libero in the back row.',
     ],
     traits: 'Tall, with long arms and quick feet along the net.',
+    playsAt: 'Middle. Front row: zone 3, at the net. Back row: usually on the bench, while the libero plays.',
   },
   opposite: {
     name: 'Opposite',
@@ -57,6 +67,7 @@ export const roleInfo: Record<RoleGroup, RoleInfo> = {
       'Usually stays out of the reception line to stay ready to attack.',
     ],
     traits: 'A powerful attacker, often the team’s top scorer. Often left-handed.',
+    playsAt: 'Right side. Front row: zone 2. Back row: zone 1.',
   },
   libero: {
     name: 'Libero',
@@ -67,5 +78,6 @@ export const roleInfo: Record<RoleGroup, RoleInfo> = {
       'Swaps in and out freely, usually for the middle blockers.',
     ],
     traits: 'Fast reactions, great ball control, and fearless on the floor.',
+    playsAt: 'Back row only, usually middle back (zone 6), in the back-row middle’s place.',
   },
 }

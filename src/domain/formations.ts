@@ -3,7 +3,7 @@ import { legalize } from './overlap'
 import { SERVER_ZONE, positionOf } from './rotation'
 import { activeSetter, type Role, type VolleySystem } from './systems'
 
-export type Phase = 'base' | 'serve' | 'receive'
+export type Phase = 'base' | 'serve' | 'receive' | 'play'
 
 // Serve receive, keyed by the zone the ACTIVE SETTER is in.
 // Passers: both outside hitters + the back-row middle.
@@ -115,5 +115,7 @@ export function formation(
       return serveFormation(system, rotation)
     case 'receive':
       return receiveFormations[positionOf(activeSetter(system, rotation), rotation)]
+    case 'play':
+      return specialtyFormation(system, rotation)
   }
 }
