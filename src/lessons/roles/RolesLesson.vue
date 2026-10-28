@@ -47,6 +47,8 @@ const focus = computed(() => playersIn(group.value, system))
       <p><strong>Plays:</strong> {{ info.playsAt }}</p>
       <p class="secondary">{{ info.traits }}</p>
     </InfoCallout>
+
+    <RouterLink class="next" to="/lessons/which-role">Which role are you? Take the quiz →</RouterLink>
   </article>
 </template>
 
@@ -58,5 +60,11 @@ const focus = computed(() => playersIn(group.value, system))
 
 .duties li + li {
   margin-top: 4px;
+}
+
+.next {
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
 }
 </style>

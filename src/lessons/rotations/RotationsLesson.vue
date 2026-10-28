@@ -47,16 +47,8 @@ const libero = computed(() => liberoTip(system.value, rotation.value, phase.valu
       <p v-if="useLibero" class="secondary">{{ libero }}</p>
     </InfoCallout>
 
-    <RouterLink class="next" to="/lessons/which-role">Which role are you? Take the quiz →</RouterLink>
-
     <CourtLegend :system="system" :use-libero="useLibero" />
   </article>
 </template>
 
-<style scoped>
-.next {
-  font-weight: 600;
-  color: var(--accent);
-  text-decoration: none;
-}
-</style>
+
